@@ -83,3 +83,5 @@ fabric.properties
 
 # End of https://www.gitignore.io/api/intellij
 /SceneBuilder-8.5.0.exe
+*.exe
+mysql-connector-java-5.1.47-bin.jar
