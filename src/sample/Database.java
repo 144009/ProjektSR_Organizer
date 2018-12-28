@@ -122,18 +122,6 @@ public class Database {
                 try(ResultSet rs = statement.executeQuery(query)){
                     UserEvent event = null;
                     while(rs.next()){
-                        /*
-                        int id = rs.getInt("id");
-                        String str1 = rs.getString("event_title");
-                        String str2 = rs.getString("event_desc");
-                        java.util.Date str3 = rs.getDate("event_date");
-                        String str4 = rs.getString("event_time");
-                        list.add(id + "\t" + str1 + "\t" + str2 + "\t" + str3 + "\t" + str4 + "\n");*/
-                    /*    int id = rs.getInt("id");
-                        String str1 = rs.getString("event_title");
-                        String str2 = rs.getString("event_desc");
-                        java.util.Date str3 = rs.getDate("event_date");
-                        java.util.Date str4 = rs.getDate("event_time");*/
                         event = new UserEvent(
                                 rs.getInt("id"),
                                 rs.getString("event_title"),
@@ -159,6 +147,66 @@ public class Database {
                 statement.setDate(3, (Date) event.getEventDate());
                 statement.setDate(4, (Date) event.getEventTime());
                 return statement.executeUpdate();
+            }
+        }
+    }
+
+    public List<String> getNearbyEvents(int count) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
+        return select(" ORDER BY DATE(event_date)>DATE(NOW()) DESC LIMIT "+count+"");
+    }
+
+    public List<String> searchByName(String searchString) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
+        return select(" WHERE event_title LIKE '" + searchString + "%'");
+    }
+
+    public void checkConnection() throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
+        //noinspection EmptyTryBlock
+        try(Connection ignored = connect()){
+        }
+    }
+
+    public int createDatabase(String name) throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.jdbc.Driver");// load database driver class
+        try(Connection connection = DriverManager.getConnection(url,user,password)){
+            try(Statement createDBStatement = connection.createStatement()){
+                createDBStatement.executeUpdate("CREATE DATABASE IF NOT EXISTS "+name);
+                useDB(connection,name);
+                String query = "CREATE TABLE dbTable (id INT NOT NULL" +
+                        " AUTO_INCREMENT PRIMARY KEY, " +
+                        "event_title VARCHAR(30) NOT NULL, " +
+                        "event_desc VARCHAR(255), " +
+                        "event_date DATE NOT NULL, " +
+                        "event_time DATE NOT NULL)";
+                try(Statement addTableStatement = connection.createStatement()){
+                    return addTableStatement.executeUpdate(query);
+                }
+            }
+        }
+    }
+
+    public int deleteDatabase(String name) throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.jdbc.Driver");// load database driver class
+        try(Connection connection = DriverManager.getConnection(url,user,password)){
+            try(Statement createDBStatement = connection.createStatement()){
+                return createDBStatement.executeUpdate("DROP DATABASE IF EXISTS "+name);
+            }
+        }
+    }
+
+    public int deleteEvent(int id) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
+        try (Connection connection = connect()) {
+            useDB(connection,name);
+            try(Statement statement = connection.createStatement()){
+                return statement.executeUpdate("DELETE FROM dbTable WHERE ID="+id+"");
+            }
+        }
+    }
+
+    public int deleteOldEvents() throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
+        try (Connection connection = connect()) {
+            useDB(connection,name);
+            try(Statement statement = connection.createStatement()){
+                return statement.executeUpdate("DELETE FROM dbTable WHERE DATE(event_date)<DATE(NOW())");
             }
         }
     }

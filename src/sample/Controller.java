@@ -1,9 +1,6 @@
 package sample;
 
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -13,9 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.event.ActionEvent;
 import javafx.scene.input.KeyEvent;
-import java.util.Date;
 import java.sql.*;
-import java.time.LocalTime;
 
 public class Controller {
 
@@ -30,7 +25,6 @@ public class Controller {
 
     //zmienne pomocnicze do wykonywania poleceń SQL
     private int result;
-    private String query;
 
     // Add a public no-args constructor
     public Controller()
@@ -287,137 +281,44 @@ public class Controller {
     @FXML
     void Button_ShowXNearEvents_OnAction(ActionEvent event) {
         //pobierz z database i wyświetl BY DATE + num
-
-        int number = Integer.parseInt(Input_Spin_XNearEvents.getValue().toString());
-        Input_ShowResults.setText(null);
-
-        try {
-            Class.forName("com.mysql.jdbc.Driver");// load database driver class
-        } catch (ClassNotFoundException classNotFound) {
-            errorBox(classNotFound.getMessage(),"ERROR","Driver Not Found");
-            System.exit(1);
-        }
-        //połączenie z bazą danych
-        try {
-            Connection connection = DriverManager.getConnection(urlDB, userDB, passwordDB);
-            // Connection connection = DriverManager.getConnection(connectionUrl);
-            // create Statement to query database
-            Statement statement = connection.createStatement();
-            query ="USE "+dbName;
-            result = statement.executeUpdate(query);
-
-            query = "SELECT * FROM dbTable ORDER BY DATE(event_date)>DATE(NOW()) DESC LIMIT "+number+"";
-            ResultSet rs = statement.executeQuery(query);
-            text="";
-            text = text + "ID\t" + "Nazwa\t" + "Tresc\t" + "Data\t" + "Godzina\n";
-
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String str1 = rs.getString("event_title");
-                String str2 = rs.getString("event_desc");
-                Date str3 = rs.getDate("event_date");
-                String str4 = rs.getString("event_time");
-                text = text + id + "\t" + str1 + "\t" + str2 + "\t" + str3 + "\t" + str4 + "\n";
-            }
+        try{
+            StringBuilder builder = new StringBuilder("ID\t" + "Nazwa\t" + "Tresc\t" + "Data\t" + "Godzina\n");
+            database.getNearbyEvents(Integer.parseInt(Input_Spin_XNearEvents.getValue().toString()))
+                    .forEach(builder::append);
+            text += builder.toString();
             Input_ShowResults.setText(text);
-
-            //zamykamy połączenie i statement
-            statement.close();
-            connection.close();
-        } catch (SQLException sqlException) {
-            errorBox(sqlException.getMessage(),"ERROR","Database Error");
-            System.exit(1);
+        }catch(Exception e){
+            errorHandler(e);
         }
     } //DONE
 
     @FXML
     void Input_QuickSearchEventTitle_OnKeyReleased(KeyEvent event) {
-        int check = 0;
-
-        //CHECK IF DATABASE GIVEN ALREADY EXISTS
-        try {
-            Class.forName("com.mysql.jdbc.Driver");// load database driver class
-        } catch (ClassNotFoundException classNotFound) {
-            errorBox(classNotFound.getMessage(),"ERROR","Driver Not Found");
-            System.exit(1);
-        }
-        try {
-
-            Connection connection = DriverManager.getConnection(urlDB, userDB, passwordDB);
-            ResultSet resultSet = connection.getMetaData().getCatalogs();
-            while (resultSet.next()) {
-                String databaseName = resultSet.getString(1);
-                if(databaseName.equals(dbName)){check=1;}
-            }
-            resultSet.close();
-
-            connection.close();
-        } catch (SQLException sqlException) {
-            errorBox(sqlException.getMessage(),"ERROR","Database Error");
-            System.exit(1);
-        }
-
-        if(check==0){
-
-        }
-        else{
-
-            try {
-                Class.forName("com.mysql.jdbc.Driver");// load database driver class
-            } catch (ClassNotFoundException classNotFound) {
-                errorBox(classNotFound.getMessage(),"ERROR","Driver Not Found");
-                System.exit(1);
-            }
-            //połączenie z bazą danych
-            try {
-                Connection connection = DriverManager.getConnection(urlDB, userDB, passwordDB);
-                Statement statement = connection.createStatement();
-                query ="USE "+dbName;
-                result = statement.executeUpdate(query);
-                query ="SELECT * FROM dbTable WHERE event_title LIKE '"+Input_FreeSelect.getText()+"%'";
-                ResultSet rs = statement.executeQuery(query);
-                text="";
-                text = text + "ID\t" + "Nazwa\t" + "Tresc\t" + "Data\t" + "Godzina\n";
-
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    String str1 = rs.getString("event_title");
-                    String str2 = rs.getString("event_desc");
-                    Date str3 = rs.getDate("event_date");
-                    String str4 = rs.getString("event_time");
-                    text = text + id + "\t" + str1 + "\t" + str2 + "\t" + str3 + "\t" + str4 + "\n";
-                }
-                Input_ShowResults.setText(text);
-
-                //zamykamy połączenie i statement
-                statement.close();
-                connection.close();
-            } catch (SQLException sqlException) {
-                errorBox(sqlException.getMessage(),"ERROR","Database Error");
-                System.exit(1);
-            }
-
+        try{
+            StringBuilder builder = new StringBuilder("ID\t" + "Nazwa\t" + "Tresc\t" + "Data\t" + "Godzina\n");
+            Input_ShowResults.setText(null);
+            text = "";
+            database.searchByName(Input_QuickSearchEventTitle.getText()).forEach(builder::append);
+            text += builder.toString();
+            Input_ShowResults.setText(text);
+        }catch(Exception e){
+            errorHandler(e);
         }
     } //DONE
 
     @FXML
     void MenuItem_CheckConnection_OnAction(ActionEvent event) {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection(urlDB, userDB, passwordDB);
+            database.checkConnection();
             infoBox("Connection succesful!","");
-        } catch (SQLException e) {
-            infoBox("SQL Exception: "+ e.toString(),"");
-        } catch (ClassNotFoundException cE) {
-            infoBox("Class Not Found Exception: "+ cE.toString(),"");
+        } catch (Exception e){
+            errorHandler(e);
         }
     } //DONE
 
     @FXML
     void MenuItem_CreateDB_OnAction(ActionEvent event) {
         //utworzenie bazy danych jeśli nie istnieje
-        //userDB = JOptionPane.showInputDialog("Użytkownik mysql, domyślnie: root");
-        //passwordDB = JOptionPane.showInputDialog("Hasło mysql, domyślnie:[blank]");
 
         TextInputDialog dialogInputDBName = new TextInputDialog("DB name");
 
@@ -426,49 +327,19 @@ public class Controller {
         dialogInputDBName.setContentText("Name:");
         Optional<String> dbNews = dialogInputDBName.showAndWait();
 
-        String dbNew = dbNews.get();
-
-        //setTitle("Organizator "+dbName);
-        //ładujemy driver java db class
         try {
-            Class.forName("com.mysql.jdbc.Driver");// load database driver class
-        } catch (ClassNotFoundException classNotFound) {
-            errorBox(classNotFound.getMessage(),"ERROR","Driver Not Found");
-            System.exit(1);
-        }
-        //połączenie z bazą danych
-        try {
-            Connection connection = DriverManager.getConnection(urlDB, userDB, passwordDB);
-            // Connection connection = DriverManager.getConnection(connectionUrl);
-            // create Statement to query database
-            Statement statement = connection.createStatement();
-            //String query = "DROP TABLE IF EXISTS myDatabaseTable";
-            result = statement.executeUpdate("CREATE DATABASE IF NOT EXISTS "+dbNew);
-            query ="USE "+dbNew;
-            result = statement.executeUpdate(query);
-            query = "CREATE TABLE dbTable (id INT NOT NULL" +
-                    " AUTO_INCREMENT PRIMARY KEY, " +
-                    "event_title VARCHAR(30) NOT NULL, " +
-                    "event_desc VARCHAR(255), " +
-                    "event_date DATE NOT NULL, " +
-                    "event_time DATE NOT NULL)";
-            result = statement.executeUpdate(query);
-
+            String dbNew = dbNews.orElseThrow(() -> new Exception("Invalid input"));
+            result = database.createDatabase(dbNew);
             infoBox("Pomyślnie utworzono bazę danych "+dbNew, "");
-            //zamykamy połączenie i statement
-            statement.close();
-            connection.close();
-        } catch (SQLException sqlException) {
-            errorBox(sqlException.getMessage(),"ERROR","Database Error");
-            System.exit(1);
+        }catch(Exception e){
+            errorHandler(e);
         }
+
     } //DONE
 
     @FXML
     void MenuItem_DeleteDB_OnAction(ActionEvent event) {
         //usunięcie bazy danych
-        //userDB = JOptionPane.showInputDialog("Użytkownik mysql, domyślnie: root");
-        //passwordDB = JOptionPane.showInputDialog("Hasło mysql, domyślnie:[blank]");
         TextInputDialog dialogInputDBName = new TextInputDialog("DB name");
 
         dialogInputDBName.setTitle("");
@@ -476,32 +347,15 @@ public class Controller {
         dialogInputDBName.setContentText("Name:");
         Optional<String> dbNews = dialogInputDBName.showAndWait();
 
-        String dbNew = dbNews.get();
-        //ładujemy driver java db class
         try {
-            Class.forName("com.mysql.jdbc.Driver");// load database driver class
-        } catch (ClassNotFoundException classNotFound) {
-            errorBox(classNotFound.getMessage(),"ERROR","Driver Not Found");
-            System.exit(1);
+            String dbNew = dbNews.orElseThrow(() -> new Exception("Invalid input"));
+            result = database.deleteDatabase(dbNew);
+            infoBox("Succesfuly deleted DB: "+dbNew, "");
+        }catch(Exception e){
+            errorHandler(e);
         }
-        //połączenie z bazą danych
-        try {
-            Connection connection = DriverManager.getConnection(urlDB, userDB, passwordDB);
-            // Connection connection = DriverManager.getConnection(connectionUrl);
-            // create Statement to query database
-            Statement statement = connection.createStatement();
-            //String query = "DROP TABLE IF EXISTS myDatabaseTable";
 
-            result = statement.executeUpdate("DROP DATABASE IF EXISTS "+dbNew);
 
-            //zamykamy połączenie i statement
-            statement.close();
-            connection.close();
-            infoBox("Succesfuly deleted DB:"+dbNew, "");
-        } catch (SQLException sqlException) {
-            errorBox(sqlException.getMessage(),"ERROR","Database Error");
-            System.exit(1);
-        }
     } //DONE
 
     @FXML
@@ -513,60 +367,24 @@ public class Controller {
         dialogInputDBName.setContentText("ID of event to delete:");
         Optional<String> IDas = dialogInputDBName.showAndWait();
 
-        String IDa = IDas.get();
-
-        int ID = Integer.parseInt(IDa);
         try {
-            Class.forName("com.mysql.jdbc.Driver");// load database driver class
-        } catch (ClassNotFoundException classNotFound) {
-            errorBox(classNotFound.getMessage(),"ERROR","Driver Not Found");
-            System.exit(1);
-        }
-        //połączenie z bazą danych
-        try {
-            Connection connection = DriverManager.getConnection(urlDB, userDB, passwordDB);
-            Statement statement = connection.createStatement();
-            query ="USE "+dbName;
-            result = statement.executeUpdate(query);
+            String stringId = IDas.orElseThrow(() -> new Exception("Invalid input"));
 
-            query = "DELETE FROM dbTable WHERE ID="+ID+"";
-
-            result = statement.executeUpdate(query);
-            infoBox("Succesfuly deleted record:"+ID, "");
-            //zamykamy połączenie i statement
-            statement.close();
-            connection.close();
-        } catch (SQLException sqlException) {
-            errorBox(sqlException.getMessage(),"ERROR","Database Error");
-            System.exit(1);
+            int id = Integer.parseInt(stringId);
+            result = database.deleteEvent(id);//database.deleteDatabase(dbNew);
+            infoBox("Succesfuly deleted record: "+id, "");
+        }catch(Exception e){
+            errorHandler(e);
         }
     } //DONE
 
     @FXML
     void MenuItem_DeleteOldEvents_OnAction(ActionEvent event) {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");// load database driver class
-        } catch (ClassNotFoundException classNotFound) {
-            errorBox(classNotFound.getMessage(),"ERROR","Driver Not Found");
-            System.exit(1);
-        }
-        //połączenie z bazą danych
-        try {
-            Connection connection = DriverManager.getConnection(urlDB, userDB, passwordDB);
-            Statement statement = connection.createStatement();
-            query ="USE "+dbName;
-            result = statement.executeUpdate(query);
-
-            query = "DELETE FROM dbTable WHERE DATE(event_date)<DATE(NOW())";
-
-            result = statement.executeUpdate(query);
+        try{
+            database.deleteOldEvents();
             infoBox("Succesfuly deleted all old events!","");
-            //zamykamy połączenie i statement
-            statement.close();
-            connection.close();
-        } catch (SQLException sqlException) {
-            errorBox(sqlException.getMessage(),"ERROR","Database Error");
-            System.exit(1);
+        }catch(Exception e){
+            errorHandler(e);
         }
     }
 
@@ -585,10 +403,10 @@ public class Controller {
         Optional<String> passwordDBs = dialogInputDBpass.showAndWait();
 
 
-        userDB = userDBs.get();
-        passwordDB = passwordDBs.get();
+        database.setUser(userDBs.orElse("root"));
+        database.setPassword(passwordDBs.orElse(""));
 
-        Label_CurrDBLoaded.setText("("+dbName+"; "+userDB+")");
+        Label_CurrDBLoaded.setText("("+database.getName()+"; "+database.getUser()+")");
     }
 
     @FXML
@@ -600,10 +418,9 @@ public class Controller {
         dialogInputDBpass.setContentText("DB name that will hold data:");
         Optional<String> dbNames = dialogInputDBpass.showAndWait();
 
-        dbName = dbNames.get();
+        database.setName(dbNames.orElse(""));
 
-        Label_CurrDBLoaded.setText("("+dbName+"; "+userDB+")");
-
+        Label_CurrDBLoaded.setText("("+database.getName()+"; "+database.getUser()+")");
     }
 
 }
