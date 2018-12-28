@@ -10,6 +10,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.event.ActionEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
+
 import java.sql.*;
 
 public class Controller {
@@ -34,36 +36,12 @@ public class Controller {
     @FXML
     private void initialize()
     {
-
         //Okienka pojawiające się przed główną aplikacją. Podaje się user+pass+DB name
-        TextInputDialog dialogInputUserDB = new TextInputDialog("DB user");
-        dialogInputUserDB.setTitle("");
-        dialogInputUserDB.setHeaderText("MySQL user, default: root");
-        dialogInputUserDB.setContentText("DB user name:");
-        Optional<String> userDBs = dialogInputUserDB.showAndWait();
+    }
 
-        TextInputDialog dialogInputDBpass = new TextInputDialog("DB name");
-        dialogInputDBpass.setTitle("");
-        dialogInputDBpass.setHeaderText("MySQL pass, default:[blank]");
-        dialogInputDBpass.setContentText("DB password:");
-        Optional<String> passwordDBs = dialogInputDBpass.showAndWait();
-
-        TextInputDialog dialogInputDBName = new TextInputDialog("DB name");
-        dialogInputDBName.setTitle("");
-        dialogInputDBName.setHeaderText("Enter your DB name:");
-        dialogInputDBName.setContentText("DB name:");
-        Optional<String> dbNames = dialogInputDBName.showAndWait();
-
-
-
-        userDB = userDBs.orElse("root");
-        passwordDB = passwordDBs.orElse("root");
-        dbName = dbNames.orElse("");
-
-        database = new Database(dbName,userDB,passwordDB,urlDB);
-
-
-        Label_CurrDBLoaded.setText("("+dbName+"; "+userDB+")");
+    public void initDatabase(Database database){
+        this.database = database;
+        Label_CurrDBLoaded.setText("("+database.getName()+"; "+database.getUser()+")");
     }
 
     @FXML

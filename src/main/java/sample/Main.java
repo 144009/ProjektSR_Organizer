@@ -12,9 +12,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
 
-        Parent root = FXMLLoader.load(getClass().getResource("/sample.fxml"));
-        primaryStage.setTitle("Organizator");
-        primaryStage.setScene(new Scene(root, 960, 670));
+        Parent root = FXMLLoader.load(getClass().getResource("/server_choosing_form.fxml"));
+        primaryStage.setTitle("Choose server");
+        primaryStage.setScene(new Scene(root, 350, 250));
         primaryStage.show();
         primaryStage.setResizable(false);
     }
