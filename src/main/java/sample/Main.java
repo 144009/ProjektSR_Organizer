@@ -10,8 +10,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-
-
         Parent root = FXMLLoader.load(getClass().getResource("/server_choosing_form.fxml"));
         primaryStage.setTitle("Choose server");
         primaryStage.setScene(new Scene(root, 350, 250));

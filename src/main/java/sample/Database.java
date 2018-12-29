@@ -4,6 +4,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Maciej on 2018-12-28 10:39
@@ -92,20 +93,32 @@ public class Database {
         }
     }
 
-    public List<String> select(String additionalQuery) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
+    public static String eventToString(UserEvent event){
+        return event.getId() + "\t" + event.getName() + "\t" + event.getDesc() + "\t"
+                + event.getEventDate() + "\t" + event.getEventTime() + "\n";
+    }
+
+    public static List<String> setAsString(List<UserEvent> events){
+        return events.stream().map(Database::eventToString).collect(Collectors.toList());
+    }
+
+
+    public List<UserEvent> select(String additionalQuery) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try(Connection connection = connect()){
             useDB(connection,name);
-            List<String> list = new ArrayList<>();
+            List<UserEvent> list = new ArrayList<>();
             try(Statement statement = connection.createStatement()){
                 String query = "SELECT * FROM dbTable "+additionalQuery;
                 try(ResultSet rs = statement.executeQuery(query)){
                     while(rs.next()){
-                        int id = rs.getInt("id");
-                        String str1 = rs.getString("event_title");
-                        String str2 = rs.getString("event_desc");
-                        java.util.Date str3 = rs.getDate("event_date");
-                        String str4 = rs.getString("event_time");
-                        list.add(id + "\t" + str1 + "\t" + str2 + "\t" + str3 + "\t" + str4 + "\n");
+                        UserEvent event = new UserEvent(
+                                rs.getInt("id"),
+                                rs.getString("event_title"),
+                                rs.getString("event_desc"),
+                                rs.getDate("event_date"),
+                                rs.getDate("event_time")
+                        );
+                        list.add(event);
                     }
                     return list;
                 }
@@ -151,11 +164,11 @@ public class Database {
         }
     }
 
-    public List<String> getNearbyEvents(int count) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
+    public List<UserEvent> getNearbyEvents(int count) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
         return select(" ORDER BY DATE(event_date)>DATE(NOW()) DESC LIMIT "+count+"");
     }
 
-    public List<String> searchByName(String searchString) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
+    public List<UserEvent> searchByName(String searchString) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
         return select(" WHERE event_title LIKE '" + searchString + "%'");
     }
 
@@ -210,4 +223,6 @@ public class Database {
             }
         }
     }
+
+
 }

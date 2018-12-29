@@ -166,6 +166,8 @@ public class Controller {
         } catch (ClassNotFoundException e) {
             errorBox(e.getMessage(),"ERROR","Driver Not Found");
             System.exit(1);
+        }catch(NoInputException ignored){
+
         } catch(Exception e){
             errorBox(e.getMessage(),"ERROR","Other error");
             e.printStackTrace();
@@ -207,7 +209,8 @@ public class Controller {
     @FXML
     void Button_FreeSelect_OnAction(ActionEvent event) {
         try {
-            List<String> results = database.select(Input_FreeSelect.getText());
+            List<UserEvent> userEventList = database.select(Input_FreeSelect.getText());
+            List<String> results = Database.setAsString(userEventList);
             StringBuilder builder = new StringBuilder("ID\t" + "Nazwa\t" + "Tresc\t" + "Data\t" + "Godzina\n");
             results.forEach(builder::append);
             text += builder.toString();
@@ -262,6 +265,7 @@ public class Controller {
         try{
             StringBuilder builder = new StringBuilder("ID\t" + "Nazwa\t" + "Tresc\t" + "Data\t" + "Godzina\n");
             database.getNearbyEvents(Integer.parseInt(Input_Spin_XNearEvents.getValue().toString()))
+                    .stream().map(Database::eventToString)
                     .forEach(builder::append);
             text += builder.toString();
             Input_ShowResults.setText(text);
@@ -276,7 +280,8 @@ public class Controller {
             StringBuilder builder = new StringBuilder("ID\t" + "Nazwa\t" + "Tresc\t" + "Data\t" + "Godzina\n");
             Input_ShowResults.setText(null);
             text = "";
-            database.searchByName(Input_QuickSearchEventTitle.getText()).forEach(builder::append);
+            database.searchByName(Input_QuickSearchEventTitle.getText())
+                    .stream().map(Database::eventToString).forEach(builder::append);
             text += builder.toString();
             Input_ShowResults.setText(text);
         }catch(Exception e){
@@ -306,7 +311,7 @@ public class Controller {
         Optional<String> dbNews = dialogInputDBName.showAndWait();
 
         try {
-            String dbNew = dbNews.orElseThrow(() -> new Exception("Invalid input"));
+            String dbNew = dbNews.orElseThrow(NoInputException::new);
             result = database.createDatabase(dbNew);
             infoBox("Pomyślnie utworzono bazę danych "+dbNew, "");
         }catch(Exception e){

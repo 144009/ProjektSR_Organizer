@@ -2,14 +2,9 @@ package sample;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +57,7 @@ public class ServerChoosingForm {
     public void checkConnection(ActionEvent actionEvent) {
         try{
             checkData();
+            @SuppressWarnings("RedundantCast")
             String driver = driversMap.get((String) databaseChooser.getSelectionModel().getSelectedItem());
             (new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText())).checkConnection();
             showBox("Connection successful!","Success","Success", Alert.AlertType.INFORMATION);

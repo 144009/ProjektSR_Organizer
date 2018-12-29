@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="sample.MainWindow"
+            prefHeight="400.0" prefWidth="600.0">
+        <top>
+            <VBox alignment="CENTER">
+                <MenuBar>
+                        <Menu mnemonicParsing="false" text="DB Management">
+                                <MenuItem  mnemonicParsing="false" onAction="#createDB" text="Create DB" />
+                                <MenuItem  mnemonicParsing="false" onAction="#deleteDB" text="Delete DB" />
+                                <MenuItem onAction="#changeConnection" text="Change connection"/>
+                                <MenuItem  mnemonicParsing="false" onAction="#checkConnection" text="Check connection"/>
+                         </Menu>
+                        <Menu mnemonicParsing="false" text="Event Manager">
+                                <MenuItem mnemonicParsing="false" onAction="#deleteEventById" text="Delete event by ID" />
+                                <MenuItem mnemonicParsing="false" onAction="#deleteOldEvents" text="Delete old events" />
+                        </Menu>
+                </MenuBar>
+                <Label text="Database, User" alignment="CENTER" fx:id="databaseAndUserLabel"/>
+            </VBox>
+        </top>
+        <center>
+            <TabPane tabClosingPolicy="UNAVAILABLE">
+                <Tab text="Upcoming">
+                    <BorderPane >
+                        <top>
+                            <GridPane alignment="CENTER" hgap="10" vgap="10">
+                                <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
+
+                                <Label GridPane.columnIndex="0" text="Show x nearest events" />
+                                <Spinner GridPane.columnIndex="1" fx:id="upcomingNearEventsSpinner" layoutX="193.0" layoutY="360.0">
+                                    <valueFactory>
+                                        <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="1" max="999999" min="0" />
+                                    </valueFactory>
+                                </Spinner>
+                                <Button GridPane.columnIndex="2" text="Select" onAction="#selectNearUpcomingEvents"/>
+                            </GridPane>
+                        </top>
+                        <center>
+                            <TableView fx:id="upcomingEventsTableView">
+                                <columns>
+                                    <TableColumn text="id"><cellValueFactory><PropertyValueFactory property="id"/></cellValueFactory></TableColumn>
+                                    <TableColumn text="name"><cellValueFactory><PropertyValueFactory property="name"/></cellValueFactory></TableColumn>
+                                    <TableColumn text="Event Date"><cellValueFactory><PropertyValueFactory property="eventDate"/></cellValueFactory></TableColumn>
+                                    <TableColumn text="Event Time"><cellValueFactory><PropertyValueFactory property="eventTime"/></cellValueFactory></TableColumn>
+                                </columns>
+                            </TableView>
+                        </center>
+                    </BorderPane>
+                </Tab>
+                <Tab text="Finished">
+                    <BorderPane >
+                        <top>
+                            <GridPane alignment="CENTER" hgap="10" vgap="10">
+                                <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
+
+                                <Label GridPane.columnIndex="0" text="Show x nearest events" />
+                                <Spinner GridPane.columnIndex="1" fx:id="finishedNearEventsSpinner" layoutX="193.0" layoutY="360.0">
+                                    <valueFactory>
+                                        <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="1" max="999999" min="0" />
+                                    </valueFactory>
+                                </Spinner>
+                                <Button GridPane.columnIndex="2" text="Select" onAction="#selectNearFinishedEvents"/>
+                            </GridPane>
+                        </top>
+                        <center>
+                            <TableView fx:id="finishedEventsTableView">
+                                <columns>
+                                    <TableColumn text="id"><cellValueFactory><PropertyValueFactory property="id"/></cellValueFactory></TableColumn>
+                                    <TableColumn text="name"><cellValueFactory><PropertyValueFactory property="name"/></cellValueFactory></TableColumn>
+                                    <TableColumn text="Event Date"><cellValueFactory><PropertyValueFactory property="eventDate"/></cellValueFactory></TableColumn>
+                                    <TableColumn text="Event Time"><cellValueFactory><PropertyValueFactory property="eventTime"/></cellValueFactory></TableColumn>
+                                </columns>
+                            </TableView>
+                        </center>
+                    </BorderPane>
+                </Tab>
+                <Tab text="Custom select">
+                    <BorderPane >
+                        <top>
+                            <GridPane alignment="CENTER" hgap="10" vgap="10">
+                                <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
+
+                                <Label GridPane.columnIndex="0" text="SELECT * FROM dbTable" />
+                                <TextField GridPane.columnIndex="1" fx:id="customSelectionTextBox"/>
+                                <Button GridPane.columnIndex="2" onAction="#selectWithCustomSettings" text="Select" />
+                            </GridPane>
+                        </top>
+                        <center>
+                            <TableView fx:id="customSelectEventsTableView">
+                                <columns>
+                                    <TableColumn text="id"><cellValueFactory><PropertyValueFactory property="id"/></cellValueFactory></TableColumn>
+                                    <TableColumn text="name"><cellValueFactory><PropertyValueFactory property="name"/></cellValueFactory></TableColumn>
+                                    <TableColumn text="Event Date"><cellValueFactory><PropertyValueFactory property="eventDate"/></cellValueFactory></TableColumn>
+                                    <TableColumn text="Event Time"><cellValueFactory><PropertyValueFactory property="eventTime"/></cellValueFactory></TableColumn>
+                                </columns>
+                            </TableView>
+                        </center>
+                    </BorderPane>
+                </Tab>
+                <Tab text="General">
+
+                </Tab>
+            </TabPane>
+        </center>
+        <bottom>
+            <BorderPane>
+                <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
+                <left>
+                    <Label text="Time" fx:id="currentTimeLabel"/>
+                </left>
+                <right>
+                    <Label text="Next event: " fx:id="nextEventLabel"/>
+                </right>
+            </BorderPane>
+        </bottom>
+</BorderPane>
