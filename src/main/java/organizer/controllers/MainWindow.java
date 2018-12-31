@@ -1,5 +1,8 @@
 package organizer.controllers;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import organizer.exceptions.DatabaseNotFoundException;
 import organizer.exceptions.NoInputException;
 import organizer.Database;
@@ -16,6 +20,9 @@ import organizer.exceptions.ValidationException;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Optional;
 
 /**
@@ -95,10 +102,21 @@ public class MainWindow {
         });
     }
 
+    private String timeString;
+
+
     public void initialize(){
         setRowFactory(upcomingEventsTableView);
         setRowFactory(finishedEventsTableView);
         setRowFactory(customSelectEventsTableView);
+
+        Timeline clock = new Timeline(new KeyFrame(Duration.ZERO,event -> {
+            timeString = LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM,FormatStyle.MEDIUM));
+            currentTimeLabel.setText(timeString);
+        }),new KeyFrame(Duration.seconds(1)));
+        clock.setCycleCount(Animation.INDEFINITE);
+        clock.play();
+
     }
 
     public void initDatabase(Database database){
