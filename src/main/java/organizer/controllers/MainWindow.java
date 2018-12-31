@@ -2,12 +2,18 @@ package organizer.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import organizer.exceptions.DatabaseNotFoundException;
 import organizer.exceptions.NoInputException;
 import organizer.Database;
 import organizer.UserEvent;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -104,8 +110,23 @@ public class MainWindow {
         }
     }
 
-    public void changeConnection(ActionEvent actionEvent) {
-
+    public void changeConnection(ActionEvent actionEvent) throws IOException {
+        Stage dialog = new Stage();
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource(
+                        "/server_choosing_form.fxml"));
+        Parent root = loader.load();
+        ServerChoosingForm scf = loader.getController();
+        scf.setControllerForEdit(database);
+        dialog.setScene(new Scene(root,root.prefWidth(600),root.prefHeight(400)));
+        dialog.setTitle("Choose server");
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.initOwner(databaseAndUserLabel.getScene().getWindow());
+        dialog.showAndWait();
+        if(scf.isConfirmed()){
+            database = scf.getDatabase();
+            databaseAndUserLabel.setText("("+database.getName()+"; "+database.getUser()+")");
+        }
     }
 
     public void selectWithCustomSettings(ActionEvent actionEvent) {
@@ -138,7 +159,7 @@ public class MainWindow {
 
 
 
-    public static void infoBox(String infoMessage, String titleBar) // DONE
+    private static void infoBox(String infoMessage, String titleBar) // DONE
     {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(titleBar);
@@ -147,7 +168,7 @@ public class MainWindow {
 
         alert.showAndWait();
     }
-    public static void warningBox(String infoMessage, String titleBar) // DONE
+    private static void warningBox(String infoMessage, String titleBar) // DONE
     {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(titleBar);
@@ -157,7 +178,7 @@ public class MainWindow {
         alert.showAndWait();
     }
 
-    public static void errorBox(String infoMessage, String titleBar, String header) // DONE
+    private static void errorBox(String infoMessage, String titleBar, String header) // DONE
     {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(titleBar);

@@ -2,6 +2,7 @@ package organizer.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -23,10 +24,22 @@ public class ServerChoosingForm {
     public CheckBox savePassword;
     public TextField dbName;
 
-    private Map<String,String> driversMap = new HashMap<>();
+    private static Map<String,String> driversMap = new HashMap<>();
 
-    public ServerChoosingForm(){
+    private boolean forEdit = false;
+    private boolean confirmed = false;
+
+    static{
         driversMap.put("MySQL","com.mysql.jdbc.Driver");
+    }
+
+    public void setControllerForEdit(Database database){
+        forEdit = true;
+        confirmed = false;
+        dbUrl.setText(database.getUrl());
+        dbUsername.setText(database.getUser());
+        dbPassword.setText(database.getPassword());
+        dbName.setText(database.getName());
     }
 
     private void showBox(String infoMessage, String titleBar, String header, Alert.AlertType alertType) {
@@ -79,9 +92,18 @@ public class ServerChoosingForm {
         }
     }
 
+    private void close(Node node){
+        ((Stage)node.getScene().getWindow()).close();
+    }
+
     public void submit(ActionEvent actionEvent){
         try{
             checkData();
+            if(forEdit){
+                confirmed = true;
+                close((Node) actionEvent.getSource());
+                return;
+            }
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource(
                             "/sample.fxml"));
@@ -94,7 +116,7 @@ public class ServerChoosingForm {
             );
             Controller controller =
                     loader.getController();
-            controller.initDatabase(new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText()));
+            controller.initDatabase(getDatabase());
         }catch(Exception e){
             showBox(e.getMessage(),"Error","Input Error", Alert.AlertType.ERROR);
             e.printStackTrace();
@@ -103,6 +125,8 @@ public class ServerChoosingForm {
 
     public void launchTestView(ActionEvent actionEvent) {
         try{
+            if(forEdit)
+                return;
             checkData();
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource(
@@ -121,5 +145,13 @@ public class ServerChoosingForm {
             showBox(e.getMessage(),"Error","Input Error", Alert.AlertType.ERROR);
             e.printStackTrace();
         }
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public Database getDatabase(){
+        return new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText());
     }
 }
