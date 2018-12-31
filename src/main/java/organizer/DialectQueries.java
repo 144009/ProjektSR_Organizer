@@ -6,4 +6,5 @@ package organizer;
 public interface DialectQueries {
     String createDatabaseQuery();
     String createTableQuery();
+    String urlDriverName();
 }

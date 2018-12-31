@@ -12,13 +12,14 @@ import organizer.exceptions.DatabaseNotFoundException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Maciej on 2018-12-28 17:30
  */
 
 public class ServerChoosingForm {
-    public ChoiceBox databaseChooser;
+    public ChoiceBox<String> databaseChooser;
     public TextField dbUrl;
     public TextField dbUsername;
     public PasswordField dbPassword;
@@ -42,6 +43,14 @@ public class ServerChoosingForm {
         dbUsername.setText(database.getUser());
         dbPassword.setText(database.getPassword());
         dbName.setText(database.getName());
+        Optional<Map.Entry<String, String>> lookForEntry = driversMap.entrySet().stream()
+                .filter(stringStringEntry -> database.getDriver().equals(stringStringEntry.getValue()))
+                .findFirst();
+        if(lookForEntry.isPresent()){
+             String databaseType = lookForEntry.get().getKey();
+             databaseChooser.getItems().stream().filter(o -> o.equals(databaseType))
+                     .findFirst().ifPresent( o -> databaseChooser.getSelectionModel().select(o));
+        }
     }
 
     private void showBox(String infoMessage, String titleBar, String header, Alert.AlertType alertType) {
@@ -54,16 +63,16 @@ public class ServerChoosingForm {
 
     public void initialize(){
         databaseChooser.getSelectionModel().select(1);
-        dbUrl.setText("jdbc:postgresql://localhost/");
+        dbUrl.setText("localhost");
         dbUsername.setText("root");
         dbPassword.setText("IVa224aD10");
-        dbName.setText("organizertests");
+        dbName.setText("newdb");
     }
 
     private void checkData() throws Exception {
         if(databaseChooser.getSelectionModel().isEmpty())
             throw new Exception("Database is not selected");
-        String item = (String) databaseChooser.getSelectionModel().getSelectedItem();
+        String item = databaseChooser.getSelectionModel().getSelectedItem();
         if(!driversMap.containsKey(item))
             throw new Exception("Invalid database value");
         if(dbUrl.getText().trim().isEmpty())
@@ -106,8 +115,7 @@ public class ServerChoosingForm {
                 return;
             }
             checkData();
-            @SuppressWarnings("RedundantCast")
-            String driver = driversMap.get((String) databaseChooser.getSelectionModel().getSelectedItem());
+            String driver = driversMap.get(databaseChooser.getSelectionModel().getSelectedItem());
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource(
                             "/main_window.fxml"));
@@ -132,8 +140,7 @@ public class ServerChoosingForm {
     }
 
     public Database getDatabase(){
-        @SuppressWarnings("RedundantCast")
-        String driver = driversMap.get((String) databaseChooser.getSelectionModel().getSelectedItem());
+        String driver = driversMap.get(databaseChooser.getSelectionModel().getSelectedItem());
         return new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText(),driver);
     }
 }

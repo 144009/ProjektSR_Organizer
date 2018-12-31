@@ -20,4 +20,9 @@ public class MySQLDialectQueries implements DialectQueries {
                 "event_date DATE NOT NULL, " +
                 "event_time DATE NOT NULL)";
     }
+
+    @Override
+    public String urlDriverName() {
+        return "mysql";
+    }
 }

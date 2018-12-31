@@ -91,7 +91,7 @@ public class Database {
 
     public Connection connect() throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
         Class.forName(driver);// load database driver class
-        Connection connection = DriverManager.getConnection(url+name,user,password);
+        Connection connection = DriverManager.getConnection("jdbc:"+chosenDialectQuery.urlDriverName()+"://"+url+"/"+name,user,password);
         ResultSet resultSet = connection.getMetaData().getCatalogs();
         boolean check = false;
         while (resultSet.next()) {
