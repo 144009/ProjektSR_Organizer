@@ -1,0 +1,18 @@
+<!-- MainWindow -->
+
+.tab-pane .tab-header-area .tab {
+    -fx-pref-height: 150;
+    -fx-pref-width: 50;}
+
+.tab .tab-label {
+    -fx-rotate: 90;  /*PROBLEM: it sizes height using vertical text before rotating, messes up H. */
+}
+
+.tab-pane{
+    -fx-pref-height: 150;
+    -fx-pref-width: 50;}
+.tab {
+    -fx-pref-height: 150;
+    -fx-pref-width: 50;
+}
+
