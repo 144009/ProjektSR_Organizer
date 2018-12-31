@@ -121,10 +121,7 @@ public class MainWindow {
     }
 
 
-
-    public void initDatabase(Database database){
-        this.database = database;
-
+    void refreshClosestEvent(){
         try{
             UserEvent userEvent = database.getClosestEvent();
             if(userEvent == null){
@@ -136,6 +133,12 @@ public class MainWindow {
             nextEventLabel.setText("Error.");
             e.printStackTrace();
         }
+    }
+
+
+    public void initDatabase(Database database){
+        this.database = database;
+        refreshClosestEvent();
 
         databaseAndUserLabel.setText("("+database.getName()+"; "+database.getUser()+")");
     }
@@ -227,6 +230,13 @@ public class MainWindow {
         if(scf.isConfirmed()){
             database = scf.getDatabase();
             databaseAndUserLabel.setText("("+database.getName()+"; "+database.getUser()+")");
+            refreshClosestEvent();
+            finishedEventsTableView.getItems().clear();
+            finishedEventsTableView.refresh();
+            upcomingEventsTableView.getItems().clear();
+            upcomingEventsTableView.refresh();
+            customSelectEventsTableView.getItems().clear();
+            customSelectEventsTableView.refresh();
         }
     }
 
