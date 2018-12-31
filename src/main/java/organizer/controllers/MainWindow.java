@@ -38,12 +38,68 @@ public class MainWindow {
     public DatePicker eventTimePicker;
     public TextArea eventDesc;
 
+
     private Database database;
+
+
+    private void showEventInfo(TableRow<UserEvent> userEventTableRow){
+        UserEvent event = userEventTableRow.getItem();
+        Stage dialog = new Stage();
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource(
+                        "/edit_delete_event.fxml"));
+        Parent root = null;
+        try {
+            root = loader.load();
+        } catch (IOException e) {
+            errorBox(e.getMessage(),"ERROR","Error");
+            System.exit(1);
+        }
+        EditDeleteEvent ede = loader.getController();
+        ede.initializeEvent(event);
+        dialog.setScene(new Scene(root,root.prefWidth(600),root.prefHeight(400)));
+        dialog.setTitle(event.getName());
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.initOwner(databaseAndUserLabel.getScene().getWindow());
+        dialog.showAndWait();
+        try{
+            if(ede.isToEdit()){
+                UserEvent editedUserEvent = ede.getUserEvent();
+                database.modifyEvent(editedUserEvent);
+                userEventTableRow.setItem(editedUserEvent);
+                infoBox("Successfully modified event!", "Info");
+                userEventTableRow.getTableView().refresh();
+            }
+        }catch(Exception e){
+            errorHandler(e);
+        }
+    }
+
+    private void setRowFactory(TableView<UserEvent> tableView){
+        tableView.setRowFactory(param -> {
+            TableRow<UserEvent> tableRow = new TableRow<>();
+            tableRow.setOnMouseClicked(
+                    event -> {
+                        if(event.getClickCount() == 2 && !(tableRow.isEmpty())){
+                            showEventInfo(tableRow);
+                        }
+                    }
+            );
+            return tableRow;
+        });
+    }
+
+    public void initialize(){
+        setRowFactory(upcomingEventsTableView);
+        setRowFactory(finishedEventsTableView);
+        setRowFactory(customSelectEventsTableView);
+    }
 
     public void initDatabase(Database database){
         this.database = database;
         databaseAndUserLabel.setText("("+database.getName()+"; "+database.getUser()+")");
     }
+
 
     public void createDB(ActionEvent actionEvent) {
 
@@ -159,15 +215,7 @@ public class MainWindow {
         }catch(Exception e){
             errorHandler(e);
         }
-
     }
-
-    /*
-        public TextField eventName;
-    public DatePicker eventDayPicker;
-    public DatePicker eventTimePicker;
-    public TextArea eventDesc;
-     */
 
     private void validateFields() throws ValidationException {
         if(eventName.getText().trim().isEmpty())

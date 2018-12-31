@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="organizer.controllers.EditDeleteEvent"
+            prefHeight="400.0" prefWidth="600.0">
+    <center>
+        <GridPane alignment="CENTER" hgap="10" vgap="10">
+            <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
+            <GridPane GridPane.rowIndex="0" alignment="CENTER">
+                <Label>Add event: </Label>
+            </GridPane>
+            <GridPane GridPane.rowIndex="1" alignment="CENTER" hgap="5" vgap="5">
+                <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="Name: "/>
+                <TextField GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="eventName"/>
+                <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="Day: "/>
+                <DatePicker GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="eventDayPicker"/>
+                <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="Time: "/>
+                <DatePicker GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="eventTimePicker"/>
+                <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="Description: "/>
+                <TextArea GridPane.rowIndex="4" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" fx:id="eventDesc"/>
+            </GridPane>
+            <GridPane GridPane.rowIndex="2" alignment="CENTER" vgap="10" hgap="10">
+                <Button GridPane.columnIndex="0" text="Edit event" onAction="#editEvent"  />
+                <Button GridPane.columnIndex="1" text="Delete event" onAction="#deleteEvent"  />
+            </GridPane>
+        </GridPane>
+    </center>
+</BorderPane>
