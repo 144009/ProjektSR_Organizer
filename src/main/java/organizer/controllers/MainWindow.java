@@ -70,6 +70,12 @@ public class MainWindow {
                 infoBox("Successfully modified event!", "Info");
                 userEventTableRow.getTableView().refresh();
             }
+            if(ede.isToDelete()){
+                UserEvent userEventToDelete = ede.getUserEvent();
+                database.deleteEvent(userEventToDelete.getId());
+                userEventTableRow.getTableView().getItems().remove(userEventToDelete);
+                infoBox("Successfully deleted event!", "Info");
+            }
         }catch(Exception e){
             errorHandler(e);
         }

@@ -2,10 +2,7 @@ package organizer.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import organizer.UserEvent;
 import organizer.exceptions.ValidationException;
@@ -78,7 +75,13 @@ public class EditDeleteEvent {
     }
 
     public void deleteEvent(ActionEvent actionEvent) {
-
+        Alert yesNoDialog = new Alert(Alert.AlertType.CONFIRMATION,
+                "Do you want to delete event '" + userEvent.getName() + "'?", ButtonType.YES,ButtonType.NO);
+        yesNoDialog.showAndWait().filter(response -> response == ButtonType.YES)
+                .ifPresent(buttonType -> {
+                    toDelete = true;
+                    close((Node)actionEvent.getSource());
+                });
     }
 
     public boolean isToEdit() {
