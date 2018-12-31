@@ -1,11 +1,15 @@
 package organizer;
 
+import organizer.dialects.MySQLDialectQueries;
+import organizer.dialects.PostgreSQLDialectQueries;
 import organizer.exceptions.DatabaseNotFoundException;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -16,12 +20,32 @@ public class Database {
     private String user;
     private String password;
     private String url;
+    private String driver;
+    private DialectQueries chosenDialectQuery;
+
+    private static Map<String,DialectQueries> dialectQueriesMap = new HashMap<>();
+
+    static{
+        dialectQueriesMap.put("com.mysql.jdbc.Driver",new MySQLDialectQueries());
+        dialectQueriesMap.put("org.postgresql.Driver",new PostgreSQLDialectQueries());
+    }
 
     public Database(String name, String user, String password, String url) {
         this.name = name;
         this.user = user;
         this.password = password;
         this.url = url;
+        this.driver = "com.mysql.jdbc.Driver";
+        chosenDialectQuery = dialectQueriesMap.get(this.driver);
+    }
+
+    public Database(String name, String user, String password, String url,String driver) {
+        this.name = name;
+        this.user = user;
+        this.password = password;
+        this.url = url;
+        this.driver = driver;
+        chosenDialectQuery = dialectQueriesMap.get(this.driver);
     }
 
     public String getName() {
@@ -56,10 +80,18 @@ public class Database {
         this.url = url;
     }
 
+    public String getDriver() {
+        return driver;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+        chosenDialectQuery = dialectQueriesMap.get(this.driver);
+    }
 
     public Connection connect() throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
-        Class.forName("com.mysql.jdbc.Driver");// load database driver class
-        Connection connection = DriverManager.getConnection(url,user,password);
+        Class.forName(driver);// load database driver class
+        Connection connection = DriverManager.getConnection(url+name,user,password);
         ResultSet resultSet = connection.getMetaData().getCatalogs();
         boolean check = false;
         while (resultSet.next()) {
@@ -72,15 +104,9 @@ public class Database {
         return connection;
     }
 
-    private void useDB(Connection conn,String name) throws SQLException {
-        try(Statement statement = conn.createStatement()){
-            statement.executeUpdate("USE " + name);
-        }
-    }
 
     public int addEvent(String eventName, String eventDesc, LocalDate eventDay, LocalDate eventTime) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try(Connection connection = connect()){
-            useDB(connection,name);
             String query = "INSERT INTO dbTable"
                     + "(event_title, event_desc, event_date, event_time) VALUES"
                     + "(?,?,?,?)";
@@ -88,7 +114,7 @@ public class Database {
                 statement.setString(1, eventName );
                 statement.setString(2, eventDesc );
                 statement.setDate(3, java.sql.Date.valueOf(eventDay));
-                statement.setString(4, eventTime.toString() );
+                statement.setDate(4, java.sql.Date.valueOf(eventTime) );
                 int result = statement.executeUpdate();
                 return result;
             }
@@ -107,7 +133,6 @@ public class Database {
 
     public List<UserEvent> select(String additionalQuery) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try(Connection connection = connect()){
-            useDB(connection,name);
             List<UserEvent> list = new ArrayList<>();
             try(Statement statement = connection.createStatement()){
                 String query = "SELECT * FROM dbTable "+additionalQuery;
@@ -131,7 +156,6 @@ public class Database {
 
     public UserEvent getEventById(int id) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try(Connection connection = connect()){
-            useDB(connection, name);
             try(Statement statement = connection.createStatement()) {
                 String query = "SELECT * FROM dbTable WHERE ID="+id+"";
                 try(ResultSet rs = statement.executeQuery(query)){
@@ -153,7 +177,6 @@ public class Database {
 
     public int modifyEvent(UserEvent event) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try(Connection connection = connect()){
-            useDB(connection, name);
             String query = "UPDATE dbTable SET event_title = ?, event_desc = ?, "
                     + "event_date = ?, event_time = ? WHERE ID = "+event.getId()+"";
             try(PreparedStatement statement = connection.prepareStatement(query)) {
@@ -193,27 +216,23 @@ public class Database {
     }
 
     public int createDatabase(String name) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");// load database driver class
-        try(Connection connection = DriverManager.getConnection(url,user,password)){
+        Class.forName(driver);// load database driver class
+        try(Connection connection = DriverManager.getConnection(url+this.name,user,password)){
             try(Statement createDBStatement = connection.createStatement()){
-                createDBStatement.executeUpdate("CREATE DATABASE IF NOT EXISTS "+name);
-                useDB(connection,name);
-                String query = "CREATE TABLE dbTable (id INT NOT NULL" +
-                        " AUTO_INCREMENT PRIMARY KEY, " +
-                        "event_title VARCHAR(30) NOT NULL, " +
-                        "event_desc VARCHAR(255), " +
-                        "event_date DATE NOT NULL, " +
-                        "event_time DATE NOT NULL)";
-                try(Statement addTableStatement = connection.createStatement()){
-                    return addTableStatement.executeUpdate(query);
+                createDBStatement.executeUpdate(chosenDialectQuery.createDatabaseQuery()+name);
+                try(Connection connectionNewBase = DriverManager.getConnection(url+name,user,password)) {
+                    String query = chosenDialectQuery.createTableQuery();
+                    try(Statement addTableStatement = connectionNewBase.createStatement()){
+                        return addTableStatement.executeUpdate(query);
+                    }
                 }
             }
         }
     }
 
     public int deleteDatabase(String name) throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.jdbc.Driver");// load database driver class
-        try(Connection connection = DriverManager.getConnection(url,user,password)){
+        Class.forName(driver);// load database driver class
+        try(Connection connection = DriverManager.getConnection(url+this.name,user,password)){
             try(Statement createDBStatement = connection.createStatement()){
                 return createDBStatement.executeUpdate("DROP DATABASE IF EXISTS "+name);
             }
@@ -222,7 +241,6 @@ public class Database {
 
     public int deleteEvent(int id) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try (Connection connection = connect()) {
-            useDB(connection,name);
             try(Statement statement = connection.createStatement()){
                 return statement.executeUpdate("DELETE FROM dbTable WHERE ID="+id+"");
             }
@@ -231,7 +249,6 @@ public class Database {
 
     public int deleteOldEvents() throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try (Connection connection = connect()) {
-            useDB(connection,name);
             try(Statement statement = connection.createStatement()){
                 return statement.executeUpdate("DELETE FROM dbTable WHERE DATE(event_date)<DATE(NOW())");
             }

@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * Created by Maciej on 2018-12-28 17:30
  */
+
 public class ServerChoosingForm {
     public ChoiceBox databaseChooser;
     public TextField dbUrl;
@@ -31,6 +32,7 @@ public class ServerChoosingForm {
 
     static{
         driversMap.put("MySQL","com.mysql.jdbc.Driver");
+        driversMap.put("PostgreSQL","org.postgresql.Driver");
     }
 
     public void setControllerForEdit(Database database){
@@ -51,11 +53,11 @@ public class ServerChoosingForm {
     }
 
     public void initialize(){
-        databaseChooser.getSelectionModel().select(0);
-        dbUrl.setText("jdbc:mysql://localhost/");
+        databaseChooser.getSelectionModel().select(1);
+        dbUrl.setText("jdbc:postgresql://localhost/");
         dbUsername.setText("root");
-        dbPassword.setText("MACsql10DB10");
-        dbName.setText("newdb");
+        dbPassword.setText("IVa224aD10");
+        dbName.setText("organizertests");
     }
 
     private void checkData() throws Exception {
@@ -79,7 +81,7 @@ public class ServerChoosingForm {
             checkData();
             @SuppressWarnings("RedundantCast")
             String driver = driversMap.get((String) databaseChooser.getSelectionModel().getSelectedItem());
-            (new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText())).checkConnection();
+            (new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText(),driver)).checkConnection();
             showBox("Connection successful!","Success","Success", Alert.AlertType.INFORMATION);
         }catch (DatabaseNotFoundException e) {
             showBox("Given DB doesnt exist.","Error","Database Error", Alert.AlertType.ERROR);
@@ -104,6 +106,8 @@ public class ServerChoosingForm {
                 return;
             }
             checkData();
+            @SuppressWarnings("RedundantCast")
+            String driver = driversMap.get((String) databaseChooser.getSelectionModel().getSelectedItem());
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource(
                             "/main_window.fxml"));
@@ -116,7 +120,7 @@ public class ServerChoosingForm {
             );
             MainWindow controller =
                     loader.getController();
-            controller.initDatabase(new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText()));
+            controller.initDatabase(new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText(),driver));
         }catch(Exception e){
             showBox(e.getMessage(),"Error","Input Error", Alert.AlertType.ERROR);
             e.printStackTrace();
@@ -128,6 +132,8 @@ public class ServerChoosingForm {
     }
 
     public Database getDatabase(){
-        return new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText());
+        @SuppressWarnings("RedundantCast")
+        String driver = driversMap.get((String) databaseChooser.getSelectionModel().getSelectedItem());
+        return new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText(),driver);
     }
 }
