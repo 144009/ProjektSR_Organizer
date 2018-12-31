@@ -182,6 +182,10 @@ public class Database {
         return select(" WHERE event_title LIKE '" + searchString + "%'");
     }
 
+    public UserEvent getClosestEvent() throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
+        return getNearbyUpcomingEvents(1).get(0);
+    }
+
     public void checkConnection() throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         //noinspection EmptyTryBlock
         try(Connection ignored = connect()){

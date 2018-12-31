@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -119,8 +120,23 @@ public class MainWindow {
 
     }
 
+
+
     public void initDatabase(Database database){
         this.database = database;
+
+        try{
+            UserEvent userEvent = database.getClosestEvent();
+            if(userEvent == null){
+                nextEventLabel.setText("No upcoming events.");
+            }else{
+                nextEventLabel.setText("Next event: " + userEvent.getName());
+            }
+        }catch(Exception e){
+            nextEventLabel.setText("Error.");
+            e.printStackTrace();
+        }
+
         databaseAndUserLabel.setText("("+database.getName()+"; "+database.getUser()+")");
     }
 
@@ -241,6 +257,23 @@ public class MainWindow {
         }
     }
 
+    public void showClosestEvent(MouseEvent mouseEvent) {
+        if(mouseEvent.getClickCount() == 2){
+            try{
+                UserEvent event = database.getClosestEvent();
+                String showString =
+                        event.getName() + "\n"
+                        + event.getDesc() + "\n"
+                        + "Date: " + event.getEventDate() + "\n"
+                        + "Time: " + event.getEventTime() + "\n";
+                (new Alert(Alert.AlertType.INFORMATION,showString)).showAndWait();
+            }catch(Exception e){
+                errorHandler(e);
+            }
+        }
+    }
+
+
     private void validateFields() throws ValidationException {
         if(eventName.getText().trim().isEmpty())
             throw new ValidationException("'Event name' field is empty");
@@ -322,6 +355,7 @@ public class MainWindow {
             System.exit(1);
         }
     }
+
 
 
 }

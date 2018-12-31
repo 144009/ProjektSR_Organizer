@@ -203,7 +203,7 @@
                     <Label fx:id="currentTimeLabel" text="Time" />
                 </left>
                 <right>
-                    <Label fx:id="nextEventLabel" text="Next event: " />
+                    <Label fx:id="nextEventLabel" text="Next event: " onMouseClicked="#showClosestEvent" />
                 </right>
             </BorderPane>
         </bottom>
