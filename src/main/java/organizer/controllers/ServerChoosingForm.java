@@ -96,33 +96,6 @@ public class ServerChoosingForm {
         ((Stage)node.getScene().getWindow()).close();
     }
 
- /*   public void submit(ActionEvent actionEvent){
-        try{
-            checkData();
-            if(forEdit){
-                confirmed = true;
-                close((Node) actionEvent.getSource());
-                return;
-            }
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource(
-                            "/sample.fxml"));
-
-            Stage stage = (Stage)dbName.getScene().getWindow();
-            stage.setScene(
-                    new Scene(
-                            loader.load()
-                    )
-            );
-            Controller controller =
-                    loader.getController();
-            controller.initDatabase(getDatabase());
-        }catch(Exception e){
-            showBox(e.getMessage(),"Error","Input Error", Alert.AlertType.ERROR);
-            e.printStackTrace();
-        }
-    }*/
-
     public void submit(ActionEvent actionEvent) {
         try{
             if(forEdit){
