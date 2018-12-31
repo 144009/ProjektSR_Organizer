@@ -1,4 +1,6 @@
-package sample;
+package organizer;
+
+import organizer.exceptions.DatabaseNotFoundException;
 
 import java.sql.*;
 import java.time.LocalDate;

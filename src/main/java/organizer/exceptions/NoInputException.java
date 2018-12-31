@@ -1,4 +1,4 @@
-package sample;
+package organizer.exceptions;
 
 /**
  * Created by Maciej on 2018-12-29 16:53

@@ -1,4 +1,4 @@
-package sample;
+package organizer;
 
 import java.util.Date;
 

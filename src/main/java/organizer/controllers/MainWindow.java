@@ -1,8 +1,12 @@
-package sample;
+package organizer.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
+import organizer.exceptions.DatabaseNotFoundException;
+import organizer.exceptions.NoInputException;
+import organizer.Database;
+import organizer.UserEvent;
 
 import java.sql.SQLException;
 import java.util.Optional;

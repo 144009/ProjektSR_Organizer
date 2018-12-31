@@ -1,4 +1,4 @@
-package sample;
+package organizer.controllers;
 
 import java.net.URL;
 import java.util.List;
@@ -10,7 +10,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.event.ActionEvent;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
+import organizer.Database;
+import organizer.exceptions.DatabaseNotFoundException;
+import organizer.exceptions.NoInputException;
+import organizer.UserEvent;
 
 import java.sql.*;
 

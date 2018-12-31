@@ -1,10 +1,13 @@
-package sample;
+package organizer.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import organizer.Database;
+import organizer.exceptions.DatabaseNotFoundException;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
