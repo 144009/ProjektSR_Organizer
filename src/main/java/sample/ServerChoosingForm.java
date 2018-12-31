@@ -36,6 +36,10 @@ public class ServerChoosingForm {
 
     public void initialize(){
         databaseChooser.getSelectionModel().select(0);
+        dbUrl.setText("jdbc:mysql://localhost/");
+        dbUsername.setText("root");
+        dbPassword.setText("MACsql10DB10");
+        dbName.setText("newdb");
     }
 
     private void checkData() throws Exception {
@@ -86,6 +90,28 @@ public class ServerChoosingForm {
                     )
             );
             Controller controller =
+                    loader.getController();
+            controller.initDatabase(new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText()));
+        }catch(Exception e){
+            showBox(e.getMessage(),"Error","Input Error", Alert.AlertType.ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    public void launchTestView(ActionEvent actionEvent) {
+        try{
+            checkData();
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(
+                            "/main_window.fxml"));
+
+            Stage stage = (Stage)dbName.getScene().getWindow();
+            stage.setScene(
+                    new Scene(
+                            loader.load()
+                    )
+            );
+            MainWindow controller =
                     loader.getController();
             controller.initDatabase(new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText()));
         }catch(Exception e){

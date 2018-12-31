@@ -165,7 +165,15 @@ public class Database {
     }
 
     public List<UserEvent> getNearbyEvents(int count) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
-        return select(" ORDER BY DATE(event_date)>DATE(NOW()) DESC LIMIT "+count+"");
+        return select(" ORDER BY ABS( DATEDIFF( event_date, NOW() ) ) \n LIMIT "+count+"");
+    }
+
+    public List<UserEvent> getNearbyUpcomingEvents(int count) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
+        return select("WHERE event_date >= NOW() ORDER BY event_date ASC LIMIT "+count+" ");
+    }
+
+    public List<UserEvent> getNearbyFinishedEvents(int count) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
+        return select("WHERE event_date < NOW() ORDER BY event_date DESC LIMIT "+count);
     }
 
     public List<UserEvent> searchByName(String searchString) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {

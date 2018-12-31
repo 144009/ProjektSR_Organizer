@@ -105,17 +105,27 @@ public class MainWindow {
     }
 
     public void selectWithCustomSettings(ActionEvent actionEvent) {
-
+        try{
+            customSelectEventsTableView.setItems(FXCollections.observableArrayList(
+                    database.select(customSelectionTextBox.getText())));
+        }catch(Exception e){
+            errorHandler(e);
+        }
     }
 
     public void selectNearFinishedEvents(ActionEvent actionEvent) {
-
+        try{
+            finishedEventsTableView.setItems(FXCollections.observableArrayList(
+                    database.getNearbyFinishedEvents(Integer.parseInt(finishedNearEventsSpinner.getValue().toString()))));
+        }catch(Exception e){
+            errorHandler(e);
+        }
     }
 
     public void selectNearUpcomingEvents(ActionEvent actionEvent) {
         try{
             upcomingEventsTableView.setItems(FXCollections.observableArrayList(
-                    database.getNearbyEvents(Integer.parseInt(upcomingNearEventsSpinner.getValue().toString()))));
+                    database.getNearbyUpcomingEvents(Integer.parseInt(upcomingNearEventsSpinner.getValue().toString()))));
         }catch(Exception e){
             errorHandler(e);
         }
