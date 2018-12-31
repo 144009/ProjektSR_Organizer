@@ -58,7 +58,7 @@
                 <Button GridPane.columnIndex="1" onAction="#submit">
                     Submit
                 </Button>
-                <Button GridPane.columnIndex="2" onAction="#launchTestView" text="Launch Test"/>
+                <!--<Button GridPane.columnIndex="2" onAction="#launchTestView" text="Launch Test"/>-->
             </GridPane>
         </GridPane>
     </center>

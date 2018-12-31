@@ -96,7 +96,7 @@ public class ServerChoosingForm {
         ((Stage)node.getScene().getWindow()).close();
     }
 
-    public void submit(ActionEvent actionEvent){
+ /*   public void submit(ActionEvent actionEvent){
         try{
             checkData();
             if(forEdit){
@@ -121,12 +121,15 @@ public class ServerChoosingForm {
             showBox(e.getMessage(),"Error","Input Error", Alert.AlertType.ERROR);
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public void launchTestView(ActionEvent actionEvent) {
+    public void submit(ActionEvent actionEvent) {
         try{
-            if(forEdit)
+            if(forEdit){
+                confirmed = true;
+                close((Node) actionEvent.getSource());
                 return;
+            }
             checkData();
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource(
