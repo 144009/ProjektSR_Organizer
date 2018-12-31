@@ -12,6 +12,7 @@ import organizer.exceptions.DatabaseNotFoundException;
 import organizer.exceptions.NoInputException;
 import organizer.Database;
 import organizer.UserEvent;
+import organizer.exceptions.ValidationException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -32,6 +33,10 @@ public class MainWindow {
     public TableView<UserEvent> finishedEventsTableView;
     public TableView<UserEvent> customSelectEventsTableView;
     public TextField customSelectionTextBox;
+    public TextField eventName;
+    public DatePicker eventDayPicker;
+    public DatePicker eventTimePicker;
+    public TextArea eventDesc;
 
     private Database database;
 
@@ -157,6 +162,39 @@ public class MainWindow {
 
     }
 
+    /*
+        public TextField eventName;
+    public DatePicker eventDayPicker;
+    public DatePicker eventTimePicker;
+    public TextArea eventDesc;
+     */
+
+    private void validateFields() throws ValidationException {
+        if(eventName.getText().trim().isEmpty())
+            throw new ValidationException("'Event name' field is empty");
+        if(eventDayPicker.getValue() == null)
+            throw new ValidationException("'Event day' field is empty");
+        if(eventTimePicker.getValue() == null)
+            throw new ValidationException("'Event time' field is empty");
+    }
+
+    public void addEvent(ActionEvent actionEvent) {
+        try{
+            validateFields();
+            database.addEvent(eventName.getText(),
+                    eventDesc.getText(),
+                    eventDayPicker.getValue(),
+                    eventTimePicker.getValue());
+            infoBox("Successfully saved new event","Info");
+            eventName.setText("");
+            eventDesc.setText("");
+            eventDayPicker.setValue(null);
+            eventTimePicker.setValue(null);
+        }catch (Exception e){
+            errorHandler(e);
+        }
+    }
+
 
 
     private static void infoBox(String infoMessage, String titleBar) // DONE
@@ -188,10 +226,15 @@ public class MainWindow {
         alert.showAndWait();
     }
 
+
+
     private void errorHandler(Exception exception){
         try{
             throw exception;
-        }catch (DatabaseNotFoundException e) {
+        } catch (ValidationException e){
+            errorBox(e.getMessage(),"ERROR","Validation error");
+        }
+        catch (DatabaseNotFoundException e) {
             warningBox("Given DB doesnt exist. Create it or change to other DB","WARNING");
         } catch (SQLException e) {
             errorBox(e.getMessage(),"ERROR","Database Error");
@@ -207,5 +250,6 @@ public class MainWindow {
             System.exit(1);
         }
     }
+
 
 }

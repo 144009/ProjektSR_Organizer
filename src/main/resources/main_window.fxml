@@ -106,7 +106,25 @@
                     </BorderPane>
                 </Tab>
                 <Tab text="General">
-
+                    <GridPane alignment="CENTER" hgap="10" vgap="10">
+                        <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
+                        <GridPane GridPane.rowIndex="0" alignment="CENTER">
+                            <Label>Add event: </Label>
+                        </GridPane>
+                        <GridPane GridPane.rowIndex="1" alignment="CENTER" hgap="5" vgap="5">
+                            <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="Name: "/>
+                            <TextField GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="eventName"/>
+                            <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="Day: "/>
+                            <DatePicker GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="eventDayPicker"/>
+                            <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="Time: "/>
+                            <DatePicker GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="eventTimePicker"/>
+                            <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="Description: "/>
+                            <TextArea GridPane.rowIndex="4" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" fx:id="eventDesc"/>
+                        </GridPane>
+                        <GridPane GridPane.rowIndex="2" alignment="CENTER">
+                            <Button GridPane.rowIndex="0" text="Add" onAction="#addEvent"  />
+                        </GridPane>
+                    </GridPane>
                 </Tab>
             </TabPane>
         </center>
