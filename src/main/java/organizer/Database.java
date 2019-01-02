@@ -6,6 +6,7 @@ import organizer.exceptions.DatabaseNotFoundException;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,7 +106,7 @@ public class Database {
     }
 
 
-    public int addEvent(String eventName, String eventDesc, LocalDate eventBegin, LocalDate eventEnd) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
+    public int addEvent(String eventName, String eventDesc, LocalDateTime eventBegin, LocalDateTime eventEnd) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try(Connection connection = connect()){
             String query = "INSERT INTO dbTable"
                     + "(event_title, event_desc, event_begin, event_end) VALUES"
@@ -113,8 +114,8 @@ public class Database {
             try(PreparedStatement statement = connection.prepareStatement(query)){
                 statement.setString(1, eventName );
                 statement.setString(2, eventDesc );
-                statement.setDate(3, java.sql.Date.valueOf(eventBegin));
-                statement.setDate(4, java.sql.Date.valueOf(eventEnd) );
+                statement.setTimestamp(3, java.sql.Timestamp.valueOf(eventBegin));
+                statement.setTimestamp(4, java.sql.Timestamp.valueOf(eventEnd) );
                 return statement.executeUpdate();
             }
         }
@@ -141,8 +142,8 @@ public class Database {
                                 rs.getInt("id"),
                                 rs.getString("event_title"),
                                 rs.getString("event_desc"),
-                                rs.getDate("event_begin"),
-                                rs.getDate("event_end")
+                                rs.getTimestamp("event_begin"),
+                                rs.getTimestamp("event_end")
                         );
                         list.add(event);
                     }
@@ -164,8 +165,8 @@ public class Database {
                                 rs.getInt("id"),
                                 rs.getString("event_title"),
                                 rs.getString("event_desc"),
-                                rs.getDate("event_begin"),
-                                rs.getDate("event_end")
+                                rs.getTimestamp("event_begin"),
+                                rs.getTimestamp("event_end")
                         );
                     }
                     return event;
@@ -181,8 +182,8 @@ public class Database {
             try(PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1,event.getName());
                 statement.setString(2,event.getDesc());
-                statement.setDate(3, (Date) event.getEventBegin());
-                statement.setDate(4, (Date) event.getEventEnd());
+                statement.setTimestamp(3, (Timestamp) event.getEventBegin());
+                statement.setTimestamp(4, (Timestamp) event.getEventEnd());
                 return statement.executeUpdate();
             }
         }

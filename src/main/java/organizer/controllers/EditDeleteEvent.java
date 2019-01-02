@@ -4,8 +4,14 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import jfxtras.scene.control.LocalTimeTextField;
 import organizer.UserEvent;
 import organizer.exceptions.ValidationException;
+
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 /**
@@ -17,6 +23,8 @@ public class EditDeleteEvent {
     public DatePicker eventBeginPicker;
     public DatePicker eventEndPicker;
     public TextArea eventDesc;
+    public LocalTimeTextField eventBeginPickerTime;
+    public LocalTimeTextField eventEndPickerTime;
 
     private UserEvent userEvent;
 
@@ -37,8 +45,14 @@ public class EditDeleteEvent {
         this.userEvent = userEvent;
         eventName.setText(userEvent.getName());
         eventDesc.setText(userEvent.getDesc());
-        eventBeginPicker.setValue(((java.sql.Date)userEvent.getEventBegin()).toLocalDate());
-        eventEndPicker.setValue(((java.sql.Date)userEvent.getEventEnd()).toLocalDate());
+
+        eventBeginPickerTime.setLocalTime(LocalTime.of(0,0,0,0));
+        eventEndPickerTime.setLocalTime(LocalTime.of(0,0,0,0));
+
+        eventBeginPicker.setValue(LocalDate.from(((java.sql.Timestamp)userEvent.getEventBegin()).toLocalDateTime()));
+        eventEndPicker.setValue(LocalDate.from(((java.sql.Timestamp)userEvent.getEventEnd()).toLocalDateTime()));
+
+
     }
 
     private void close(Node node){
@@ -50,18 +64,25 @@ public class EditDeleteEvent {
         return userEvent;
     }
 
-    private java.util.Date getDate(java.time.LocalDate date){
-        return java.sql.Date.valueOf(date);
+    private java.sql.Timestamp getDate(java.time.LocalDateTime date){
+        return java.sql.Timestamp.valueOf(date);
     }
 
     public void editEvent(ActionEvent actionEvent) {
 
         try{
             validateFields();
+
+            // convert LocalDate to LocalDateTime and combine it with LocalTime
+            LocalDate dateStart = eventBeginPicker.getValue();
+            LocalDate dateEnd = eventEndPicker.getValue();
+            LocalDateTime dateTimeStart = dateStart.atTime(eventBeginPickerTime.getLocalTime());
+            LocalDateTime dateTimeEnd = dateEnd.atTime(eventEndPickerTime.getLocalTime());
+
             userEvent.setName(eventName.getText());
             userEvent.setDesc(eventDesc.getText());
-            userEvent.setEventBegin(getDate(eventBeginPicker.getValue()));
-            userEvent.setEventEnd(getDate(eventEndPicker.getValue()));
+            userEvent.setEventBegin(getDate(dateTimeStart));
+            userEvent.setEventEnd(getDate(dateTimeEnd));
             toEdit = true;
             close((Node)actionEvent.getSource());
         }catch(ValidationException ve){

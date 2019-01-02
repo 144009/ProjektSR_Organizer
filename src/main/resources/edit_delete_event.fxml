@@ -1,33 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="organizer.controllers.EditDeleteEvent"
-            prefHeight="400.0" prefWidth="600.0">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import jfxtras.scene.control.LocalTimeTextField?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.controllers.EditDeleteEvent">
     <center>
         <GridPane alignment="CENTER" hgap="10" vgap="10">
-            <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
-            <GridPane GridPane.rowIndex="0" alignment="CENTER">
-                <Label>Add event: </Label>
+            <padding><Insets bottom="5" left="5" right="5" top="5" /></padding>
+            <GridPane alignment="CENTER" GridPane.rowIndex="0">
+                <Label text="Modify event:">Add event: </Label>
+            <columnConstraints>
+               <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+               <RowConstraints />
+            </rowConstraints>
             </GridPane>
-            <GridPane GridPane.rowIndex="1" alignment="CENTER" hgap="5" vgap="5">
-                <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="Name: "/>
-                <TextField GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="eventName"/>
-                <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="Begin: "/>
-                <DatePicker GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="eventBeginPicker"/>
-                <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="End: "/>
-                <DatePicker GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="eventEndPicker"/>
-                <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="Description: "/>
-                <TextArea GridPane.rowIndex="4" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" fx:id="eventDesc"/>
+            <GridPane alignment="CENTER" hgap="5" vgap="5" GridPane.rowIndex="1">
+                <Label text="Name: " GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="eventName" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                <Label text="Begin date: " GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <DatePicker fx:id="eventBeginPicker" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label text="End date: " GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <DatePicker fx:id="eventEndPicker" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label text="Description: " GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                <TextArea fx:id="eventDesc" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" />
+            <Label text="Begin time:" GridPane.rowIndex="2" />
+            <Label text="End time:" GridPane.rowIndex="4" />
+            <LocalTimeTextField fx:id="eventBeginPickerTime" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <LocalTimeTextField fx:id="eventEndPickerTime" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <columnConstraints>
+               <ColumnConstraints />
+               <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+               <RowConstraints />
+               <RowConstraints />
+               <RowConstraints minHeight="10.0" prefHeight="30.0" />
+               <RowConstraints />
+               <RowConstraints minHeight="10.0" prefHeight="30.0" />
+               <RowConstraints />
+               <RowConstraints />
+            </rowConstraints>
             </GridPane>
-            <GridPane GridPane.rowIndex="2" alignment="CENTER" vgap="10" hgap="10">
-                <Button GridPane.columnIndex="0" text="Edit event" onAction="#editEvent"  />
-                <Button GridPane.columnIndex="1" text="Delete event" onAction="#deleteEvent"  />
+            <GridPane alignment="CENTER" hgap="10" vgap="10" GridPane.rowIndex="2">
+                <Button onAction="#editEvent" text="Edit event" GridPane.columnIndex="0" />
+                <Button onAction="#deleteEvent" text="Delete event" GridPane.columnIndex="1" />
+            <columnConstraints>
+               <ColumnConstraints />
+               <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+               <RowConstraints />
+            </rowConstraints>
             </GridPane>
+         <columnConstraints>
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
         </GridPane>
     </center>
 </BorderPane>

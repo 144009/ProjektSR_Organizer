@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("/server_choosing_form.fxml"));
         primaryStage.setTitle("Choose server");
-        primaryStage.setScene(new Scene(root, 350, 250));
+        primaryStage.setScene(new Scene(root, 400, 300));
         primaryStage.show();
         primaryStage.setResizable(false);
     }

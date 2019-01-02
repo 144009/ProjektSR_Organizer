@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import jfxtras.scene.control.LocalTimeTextField;
 import organizer.exceptions.DatabaseNotFoundException;
 import organizer.exceptions.NoInputException;
 import organizer.Database;
@@ -21,7 +22,9 @@ import organizer.exceptions.ValidationException;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Optional;
@@ -45,6 +48,8 @@ public class MainWindow {
     public DatePicker eventBeginPicker;
     public DatePicker eventEndPicker;
     public TextArea eventDesc;
+    public LocalTimeTextField eventBeginPickerTime;
+    public LocalTimeTextField eventEndPickerTime;
 
 
     private Database database;
@@ -65,7 +70,7 @@ public class MainWindow {
         }
         EditDeleteEvent ede = loader.getController();
         ede.initializeEvent(event);
-        dialog.setScene(new Scene(root,root.prefWidth(600),root.prefHeight(400)));
+        dialog.setScene(new Scene(root,root.prefWidth(800),root.prefHeight(600)));
         dialog.setTitle(event.getName());
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initOwner(databaseAndUserLabel.getScene().getWindow());
@@ -110,6 +115,9 @@ public class MainWindow {
         setRowFactory(upcomingEventsTableView);
         setRowFactory(finishedEventsTableView);
         setRowFactory(customSelectEventsTableView);
+
+        eventBeginPickerTime.setLocalTime(LocalTime.of(0,0,0,0));
+        eventEndPickerTime.setLocalTime(LocalTime.of(0,0,0,0));
 
         Timeline clock = new Timeline(new KeyFrame(Duration.ZERO,event -> {
             timeString = LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM,FormatStyle.MEDIUM));
@@ -289,29 +297,36 @@ public class MainWindow {
         if(eventName.getText().trim().isEmpty())
             throw new ValidationException("'Event name' field is empty");
         if(eventBeginPicker.getValue() == null)
-            throw new ValidationException("'Event day' field is empty");
+            throw new ValidationException("'Event start day' field is empty");
         if(eventEndPicker.getValue() == null)
-            throw new ValidationException("'Event time' field is empty");
+            throw new ValidationException("'Event end day' field is empty");
     }
 
     public void addEvent(ActionEvent actionEvent) {
         try{
             validateFields();
+
+            // convert LocalDate to LocalDateTime and combine it with LocalTime
+            LocalDate dateStart = eventBeginPicker.getValue();
+            LocalDate dateEnd = eventEndPicker.getValue();
+            LocalDateTime dateTimeStart = dateStart.atTime(eventBeginPickerTime.getLocalTime());
+            LocalDateTime dateTimeEnd = dateEnd.atTime(eventEndPickerTime.getLocalTime());
+
             database.addEvent(eventName.getText(),
                     eventDesc.getText(),
-                    eventBeginPicker.getValue(),
-                    eventEndPicker.getValue());
+                    dateTimeStart,
+                    dateTimeEnd);
             infoBox("Successfully saved new event","Info");
             eventName.setText("");
             eventDesc.setText("");
             eventBeginPicker.setValue(null);
             eventEndPicker.setValue(null);
+            eventBeginPickerTime.setLocalTime(LocalTime.of(0,0,0,0));
+            eventEndPickerTime.setLocalTime(LocalTime.of(0,0,0,0));
         }catch (Exception e){
             errorHandler(e);
         }
     }
-
-
 
     private static void infoBox(String infoMessage, String titleBar) // DONE
     {
