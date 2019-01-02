@@ -85,3 +85,5 @@ fabric.properties
 /SceneBuilder-8.5.0.exe
 *.exe
 mysql-connector-java-5.1.47-bin.jar
+
+target/
