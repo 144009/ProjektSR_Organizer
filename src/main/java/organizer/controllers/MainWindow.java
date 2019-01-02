@@ -143,11 +143,20 @@ public class MainWindow {
         }
     }
 
+    private void setInitialEventLists(){
+        try{
+            upcomingEventsTableView.setItems(FXCollections.observableArrayList(database.getNearbyUpcomingEvents(20)));
+            finishedEventsTableView.setItems(FXCollections.observableArrayList(database.getNearbyFinishedEvents(20)));
+        }catch(Exception e){
+            errorHandler(e);
+        }
+    }
+
 
     public void initDatabase(Database database){
         this.database = database;
+        setInitialEventLists();
         refreshClosestEvent();
-
         databaseAndUserLabel.setText("("+database.getName()+"; "+database.getUser()+")");
     }
 

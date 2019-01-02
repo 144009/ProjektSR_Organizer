@@ -58,7 +58,7 @@
                                 <Label text="Show x nearest events" GridPane.columnIndex="0" />
                                 <Spinner fx:id="upcomingNearEventsSpinner" layoutX="193.0" layoutY="360.0" GridPane.columnIndex="1">
                                     <valueFactory>
-                                        <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="1" max="999999" min="0" />
+                                        <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="20" max="999999" min="0" />
                                     </valueFactory>
                                 </Spinner>
                                 <Button onAction="#selectNearUpcomingEvents" text="Select" GridPane.columnIndex="2" />
@@ -96,7 +96,7 @@
                                 <Label text="Show x nearest events" GridPane.columnIndex="0" />
                                 <Spinner fx:id="finishedNearEventsSpinner" layoutX="193.0" layoutY="360.0" GridPane.columnIndex="1">
                                     <valueFactory>
-                                        <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="1" max="999999" min="0" />
+                                        <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="20" max="999999" min="0" />
                                     </valueFactory>
                                 </Spinner>
                                 <Button onAction="#selectNearFinishedEvents" text="Select" GridPane.columnIndex="2" />
