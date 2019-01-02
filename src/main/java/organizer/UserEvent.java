@@ -9,15 +9,15 @@ public class UserEvent {
     private int id;
     private String name;
     private String desc;
-    private Date eventDate;
-    private Date eventTime;
+    private Date eventBegin;
+    private Date eventEnd;
 
-    public UserEvent(int id, String name, String desc, Date eventDate, Date eventTime) {
+    public UserEvent(int id, String name, String desc, Date eventBegin, Date eventEnd) {
         this.id = id;
         this.name = name;
         this.desc = desc;
-        this.eventDate = eventDate;
-        this.eventTime = eventTime;
+        this.eventBegin = eventBegin;
+        this.eventEnd = eventEnd;
     }
 
     public int getId() {
@@ -44,19 +44,19 @@ public class UserEvent {
         this.desc = desc;
     }
 
-    public Date getEventDate() {
-        return eventDate;
+    public Date getEventBegin() {
+        return eventBegin;
     }
 
-    public void setEventDate(Date eventDate) {
-        this.eventDate = eventDate;
+    public void setEventBegin(Date eventBegin) {
+        this.eventBegin = eventBegin;
     }
 
-    public Date getEventTime() {
-        return eventTime;
+    public Date getEventEnd() {
+        return eventEnd;
     }
 
-    public void setEventTime(Date eventTime) {
-        this.eventTime = eventTime;
+    public void setEventEnd(Date eventEnd) {
+        this.eventEnd = eventEnd;
     }
 }

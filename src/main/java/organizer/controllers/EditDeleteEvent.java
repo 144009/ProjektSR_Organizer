@@ -14,8 +14,8 @@ import organizer.exceptions.ValidationException;
 public class EditDeleteEvent {
 
     public TextField eventName;
-    public DatePicker eventDayPicker;
-    public DatePicker eventTimePicker;
+    public DatePicker eventBeginPicker;
+    public DatePicker eventEndPicker;
     public TextArea eventDesc;
 
     private UserEvent userEvent;
@@ -26,9 +26,9 @@ public class EditDeleteEvent {
     private void validateFields() throws ValidationException {
         if(eventName.getText().trim().isEmpty())
             throw new ValidationException("'Event name' field is empty");
-        if(eventDayPicker.getValue() == null)
+        if(eventBeginPicker.getValue() == null)
             throw new ValidationException("'Event day' field is empty");
-        if(eventTimePicker.getValue() == null)
+        if(eventEndPicker.getValue() == null)
             throw new ValidationException("'Event time' field is empty");
     }
 
@@ -37,8 +37,8 @@ public class EditDeleteEvent {
         this.userEvent = userEvent;
         eventName.setText(userEvent.getName());
         eventDesc.setText(userEvent.getDesc());
-        eventDayPicker.setValue(((java.sql.Date)userEvent.getEventDate()).toLocalDate());
-        eventTimePicker.setValue(((java.sql.Date)userEvent.getEventTime()).toLocalDate());
+        eventBeginPicker.setValue(((java.sql.Date)userEvent.getEventBegin()).toLocalDate());
+        eventEndPicker.setValue(((java.sql.Date)userEvent.getEventEnd()).toLocalDate());
     }
 
     private void close(Node node){
@@ -60,8 +60,8 @@ public class EditDeleteEvent {
             validateFields();
             userEvent.setName(eventName.getText());
             userEvent.setDesc(eventDesc.getText());
-            userEvent.setEventDate(getDate(eventDayPicker.getValue()));
-            userEvent.setEventTime(getDate(eventTimePicker.getValue()));
+            userEvent.setEventBegin(getDate(eventBeginPicker.getValue()));
+            userEvent.setEventEnd(getDate(eventEndPicker.getValue()));
             toEdit = true;
             close((Node)actionEvent.getSource());
         }catch(ValidationException ve){

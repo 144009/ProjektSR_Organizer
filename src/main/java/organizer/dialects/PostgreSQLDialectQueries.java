@@ -16,8 +16,8 @@ public class PostgreSQLDialectQueries implements DialectQueries {
         return "CREATE TABLE dbTable (id SERIAL PRIMARY KEY, " +
                 "event_title VARCHAR(30) NOT NULL, " +
                 "event_desc VARCHAR(255), " +
-                "event_date DATE NOT NULL, " +
-                "event_time DATE NOT NULL)";
+                "event_begin timestamp NOT NULL, " +
+                "event_end timestamp NOT NULL)";
     }
 
     @Override

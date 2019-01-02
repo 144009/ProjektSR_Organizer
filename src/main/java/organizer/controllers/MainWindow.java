@@ -42,8 +42,8 @@ public class MainWindow {
     public TableView<UserEvent> customSelectEventsTableView;
     public TextField customSelectionTextBox;
     public TextField eventName;
-    public DatePicker eventDayPicker;
-    public DatePicker eventTimePicker;
+    public DatePicker eventBeginPicker;
+    public DatePicker eventEndPicker;
     public TextArea eventDesc;
 
 
@@ -275,8 +275,8 @@ public class MainWindow {
                 String showString =
                         event.getName() + "\n"
                         + event.getDesc() + "\n"
-                        + "Date: " + event.getEventDate() + "\n"
-                        + "Time: " + event.getEventTime() + "\n";
+                        + "Begin: " + event.getEventBegin() + "\n"
+                        + "End: " + event.getEventEnd() + "\n";
                 (new Alert(Alert.AlertType.INFORMATION,showString)).showAndWait();
             }catch(Exception e){
                 errorHandler(e);
@@ -288,9 +288,9 @@ public class MainWindow {
     private void validateFields() throws ValidationException {
         if(eventName.getText().trim().isEmpty())
             throw new ValidationException("'Event name' field is empty");
-        if(eventDayPicker.getValue() == null)
+        if(eventBeginPicker.getValue() == null)
             throw new ValidationException("'Event day' field is empty");
-        if(eventTimePicker.getValue() == null)
+        if(eventEndPicker.getValue() == null)
             throw new ValidationException("'Event time' field is empty");
     }
 
@@ -299,13 +299,13 @@ public class MainWindow {
             validateFields();
             database.addEvent(eventName.getText(),
                     eventDesc.getText(),
-                    eventDayPicker.getValue(),
-                    eventTimePicker.getValue());
+                    eventBeginPicker.getValue(),
+                    eventEndPicker.getValue());
             infoBox("Successfully saved new event","Info");
             eventName.setText("");
             eventDesc.setText("");
-            eventDayPicker.setValue(null);
-            eventTimePicker.setValue(null);
+            eventBeginPicker.setValue(null);
+            eventEndPicker.setValue(null);
         }catch (Exception e){
             errorHandler(e);
         }
@@ -354,16 +354,13 @@ public class MainWindow {
             warningBox("Given DB doesnt exist. Create it or change to other DB","WARNING");
         } catch (SQLException e) {
             errorBox(e.getMessage(),"ERROR","Database Error");
-            System.exit(1);
         } catch (ClassNotFoundException e) {
             errorBox(e.getMessage(),"ERROR","Driver Not Found");
-            System.exit(1);
         } catch(NoInputException ignored){
 
         } catch(Exception e){
             errorBox(e.getMessage(),"ERROR","Other error");
             e.printStackTrace();
-            System.exit(1);
         }
     }
 

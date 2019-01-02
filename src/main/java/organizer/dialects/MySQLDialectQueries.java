@@ -17,8 +17,8 @@ public class MySQLDialectQueries implements DialectQueries {
                 " AUTO_INCREMENT PRIMARY KEY, " +
                 "event_title VARCHAR(30) NOT NULL, " +
                 "event_desc VARCHAR(255), " +
-                "event_date DATE NOT NULL, " +
-                "event_time DATE NOT NULL)";
+                "event_begin DATETIME NOT NULL, " +
+                "event_end DATETIME NOT NULL)";
     }
 
     @Override

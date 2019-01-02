@@ -105,25 +105,24 @@ public class Database {
     }
 
 
-    public int addEvent(String eventName, String eventDesc, LocalDate eventDay, LocalDate eventTime) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
+    public int addEvent(String eventName, String eventDesc, LocalDate eventBegin, LocalDate eventEnd) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try(Connection connection = connect()){
             String query = "INSERT INTO dbTable"
-                    + "(event_title, event_desc, event_date, event_time) VALUES"
+                    + "(event_title, event_desc, event_begin, event_end) VALUES"
                     + "(?,?,?,?)";
             try(PreparedStatement statement = connection.prepareStatement(query)){
                 statement.setString(1, eventName );
                 statement.setString(2, eventDesc );
-                statement.setDate(3, java.sql.Date.valueOf(eventDay));
-                statement.setDate(4, java.sql.Date.valueOf(eventTime) );
-                int result = statement.executeUpdate();
-                return result;
+                statement.setDate(3, java.sql.Date.valueOf(eventBegin));
+                statement.setDate(4, java.sql.Date.valueOf(eventEnd) );
+                return statement.executeUpdate();
             }
         }
     }
 
     public static String eventToString(UserEvent event){
         return event.getId() + "\t" + event.getName() + "\t" + event.getDesc() + "\t"
-                + event.getEventDate() + "\t" + event.getEventTime() + "\n";
+                + event.getEventBegin() + "\t" + event.getEventEnd() + "\n";
     }
 
     public static List<String> setAsString(List<UserEvent> events){
@@ -142,8 +141,8 @@ public class Database {
                                 rs.getInt("id"),
                                 rs.getString("event_title"),
                                 rs.getString("event_desc"),
-                                rs.getDate("event_date"),
-                                rs.getDate("event_time")
+                                rs.getDate("event_begin"),
+                                rs.getDate("event_end")
                         );
                         list.add(event);
                     }
@@ -165,8 +164,8 @@ public class Database {
                                 rs.getInt("id"),
                                 rs.getString("event_title"),
                                 rs.getString("event_desc"),
-                                rs.getDate("event_date"),
-                                rs.getDate("event_time")
+                                rs.getDate("event_begin"),
+                                rs.getDate("event_end")
                         );
                     }
                     return event;
@@ -178,27 +177,27 @@ public class Database {
     public int modifyEvent(UserEvent event) throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try(Connection connection = connect()){
             String query = "UPDATE dbTable SET event_title = ?, event_desc = ?, "
-                    + "event_date = ?, event_time = ? WHERE ID = "+event.getId()+"";
+                    + "event_begin = ?, event_end = ? WHERE ID = "+event.getId()+"";
             try(PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1,event.getName());
                 statement.setString(2,event.getDesc());
-                statement.setDate(3, (Date) event.getEventDate());
-                statement.setDate(4, (Date) event.getEventTime());
+                statement.setDate(3, (Date) event.getEventBegin());
+                statement.setDate(4, (Date) event.getEventEnd());
                 return statement.executeUpdate();
             }
         }
     }
 
     public List<UserEvent> getNearbyEvents(int count) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
-        return select(" ORDER BY ABS( DATEDIFF( event_date, NOW() ) ) \n LIMIT "+count+"");
+        return select(" ORDER BY ABS( DATEDIFF( event_begin, NOW() ) ) \n LIMIT "+count+"");
     }
 
     public List<UserEvent> getNearbyUpcomingEvents(int count) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
-        return select("WHERE event_date >= NOW() ORDER BY event_date ASC LIMIT "+count+" ");
+        return select("WHERE event_begin >= NOW() ORDER BY event_begin ASC LIMIT "+count+" ");
     }
 
     public List<UserEvent> getNearbyFinishedEvents(int count) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
-        return select("WHERE event_date < NOW() ORDER BY event_date DESC LIMIT "+count);
+        return select("WHERE event_end < NOW() ORDER BY event_begin DESC LIMIT "+count);
     }
 
     public List<UserEvent> searchByName(String searchString) throws ClassNotFoundException, SQLException, DatabaseNotFoundException {
@@ -218,12 +217,13 @@ public class Database {
         }
     }
 
+
     public int createDatabase(String name) throws ClassNotFoundException, SQLException {
         Class.forName(driver);// load database driver class
-        try(Connection connection = DriverManager.getConnection(url+this.name,user,password)){
+        try(Connection connection = DriverManager.getConnection("jdbc:"+chosenDialectQuery.urlDriverName()+"://"+url+"/"+this.name,user,password)){
             try(Statement createDBStatement = connection.createStatement()){
                 createDBStatement.executeUpdate(chosenDialectQuery.createDatabaseQuery()+name);
-                try(Connection connectionNewBase = DriverManager.getConnection(url+name,user,password)) {
+                try(Connection connectionNewBase = DriverManager.getConnection("jdbc:"+chosenDialectQuery.urlDriverName()+"://"+url+"/"+name,user,password)) {
                     String query = chosenDialectQuery.createTableQuery();
                     try(Statement addTableStatement = connectionNewBase.createStatement()){
                         return addTableStatement.executeUpdate(query);
@@ -235,7 +235,7 @@ public class Database {
 
     public int deleteDatabase(String name) throws SQLException, ClassNotFoundException {
         Class.forName(driver);// load database driver class
-        try(Connection connection = DriverManager.getConnection(url+this.name,user,password)){
+        try(Connection connection = DriverManager.getConnection("jdbc:"+chosenDialectQuery.urlDriverName()+"://"+url+"/"+this.name,user,password)){
             try(Statement createDBStatement = connection.createStatement()){
                 return createDBStatement.executeUpdate("DROP DATABASE IF EXISTS "+name);
             }
@@ -253,7 +253,7 @@ public class Database {
     public int deleteOldEvents() throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
         try (Connection connection = connect()) {
             try(Statement statement = connection.createStatement()){
-                return statement.executeUpdate("DELETE FROM dbTable WHERE DATE(event_date)<DATE(NOW())");
+                return statement.executeUpdate("DELETE FROM dbTable WHERE DATE(event_end)<DATE(NOW())");
             }
         }
     }

@@ -17,10 +17,10 @@
             <GridPane GridPane.rowIndex="1" alignment="CENTER" hgap="5" vgap="5">
                 <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="Name: "/>
                 <TextField GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="eventName"/>
-                <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="Day: "/>
-                <DatePicker GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="eventDayPicker"/>
-                <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="Time: "/>
-                <DatePicker GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="eventTimePicker"/>
+                <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="Begin: "/>
+                <DatePicker GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="eventBeginPicker"/>
+                <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="End: "/>
+                <DatePicker GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="eventEndPicker"/>
                 <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="Description: "/>
                 <TextArea GridPane.rowIndex="4" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" fx:id="eventDesc"/>
             </GridPane>
