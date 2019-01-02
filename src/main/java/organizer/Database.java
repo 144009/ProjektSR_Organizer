@@ -206,7 +206,10 @@ public class Database {
     }
 
     public UserEvent getClosestEvent() throws DatabaseNotFoundException, SQLException, ClassNotFoundException {
-        return getNearbyUpcomingEvents(1).get(0);
+        List<UserEvent> events = getNearbyUpcomingEvents(1);
+        if(events.isEmpty())
+            return null;
+        return events.get(0);
     }
 
     public void checkConnection() throws DatabaseNotFoundException, SQLException, ClassNotFoundException {

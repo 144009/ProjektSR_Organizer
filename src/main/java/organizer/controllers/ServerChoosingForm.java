@@ -1,14 +1,18 @@
 package organizer.controllers;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import organizer.ChoosingFormFields;
 import organizer.Database;
 import organizer.exceptions.DatabaseNotFoundException;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +40,17 @@ public class ServerChoosingForm {
         driversMap.put("PostgreSQL","org.postgresql.Driver");
     }
 
+    private void selectByDriverClass(String driverClassString){
+        Optional<Map.Entry<String, String>> lookForEntry = driversMap.entrySet().stream()
+                .filter(stringStringEntry -> driverClassString.equals(stringStringEntry.getValue()))
+                .findFirst();
+        if(lookForEntry.isPresent()){
+            String databaseType = lookForEntry.get().getKey();
+            databaseChooser.getItems().stream().filter(o -> o.equals(databaseType))
+                    .findFirst().ifPresent( o -> databaseChooser.getSelectionModel().select(o));
+        }
+    }
+
     public void setControllerForEdit(Database database){
         forEdit = true;
         confirmed = false;
@@ -43,14 +58,7 @@ public class ServerChoosingForm {
         dbUsername.setText(database.getUser());
         dbPassword.setText(database.getPassword());
         dbName.setText(database.getName());
-        Optional<Map.Entry<String, String>> lookForEntry = driversMap.entrySet().stream()
-                .filter(stringStringEntry -> database.getDriver().equals(stringStringEntry.getValue()))
-                .findFirst();
-        if(lookForEntry.isPresent()){
-             String databaseType = lookForEntry.get().getKey();
-             databaseChooser.getItems().stream().filter(o -> o.equals(databaseType))
-                     .findFirst().ifPresent( o -> databaseChooser.getSelectionModel().select(o));
-        }
+        selectByDriverClass(database.getDriver());
     }
 
     private void showBox(String infoMessage, String titleBar, String header, Alert.AlertType alertType) {
@@ -62,11 +70,25 @@ public class ServerChoosingForm {
     }
 
     public void initialize(){
-        databaseChooser.getSelectionModel().select(1);
-        dbUrl.setText("localhost");
-        dbUsername.setText("root");
-        dbPassword.setText("IVa224aD10");
-        dbName.setText("newdb");
+        File file = new File("last_form_fields.xml");
+        if(file.exists()) {
+            XmlMapper mapper = new XmlMapper();
+            try {
+                ChoosingFormFields lastFormFields = mapper.readValue(file,ChoosingFormFields.class);
+                databaseChooser.getItems().stream()
+                        .filter(s -> s.equals(lastFormFields.getType()))
+                        .findFirst().ifPresent(s -> databaseChooser.getSelectionModel().select(s));
+                dbUrl.setText(lastFormFields.getUrl());
+                dbUsername.setText(lastFormFields.getUserName());
+                dbPassword.setText(lastFormFields.getPassword());
+                if(!dbPassword.getText().isEmpty()){
+                    savePassword.setSelected(true);
+                }
+                dbName.setText(lastFormFields.getName());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void checkData() throws Exception {
@@ -83,6 +105,22 @@ public class ServerChoosingForm {
             throw new Exception("Password field is empty");
         if(dbName.getText().trim().isEmpty())
             throw new Exception("Database name field is empty");
+    }
+
+    public void saveToFile(){
+        String password = dbPassword.getText();
+        if(!savePassword.isSelected()){
+            password = "";
+        }
+        ChoosingFormFields lastFormFields =
+                new ChoosingFormFields(databaseChooser.getSelectionModel().getSelectedItem(),
+                        dbUrl.getText(),dbName.getText(),dbUsername.getText(),password);
+        XmlMapper mapper = new XmlMapper();
+        try {
+            mapper.writeValue(new File("last_form_fields.xml"),lastFormFields);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void checkConnection(ActionEvent actionEvent) {
@@ -128,7 +166,9 @@ public class ServerChoosingForm {
             );
             MainWindow controller =
                     loader.getController();
+            saveToFile();
             controller.initDatabase(new Database(dbName.getText(),dbUsername.getText(),dbPassword.getText(),dbUrl.getText(),driver));
+
         }catch(Exception e){
             showBox(e.getMessage(),"Error","Input Error", Alert.AlertType.ERROR);
             e.printStackTrace();

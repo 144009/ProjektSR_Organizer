@@ -121,7 +121,7 @@ public class MainWindow {
     }
 
 
-    void refreshClosestEvent(){
+    private void refreshClosestEvent(){
         try{
             UserEvent userEvent = database.getClosestEvent();
             if(userEvent == null){
@@ -198,7 +198,7 @@ public class MainWindow {
         try {
             String stringId = IDas.orElseThrow(NoInputException::new);
             int id = Integer.parseInt(stringId);
-            database.deleteEvent(id);//database.deleteDatabase(dbNew);
+            database.deleteEvent(id);
             infoBox("Succesfuly deleted record: "+id, "");
         }catch(Exception e){
             errorHandler(e);
@@ -229,6 +229,7 @@ public class MainWindow {
         dialog.showAndWait();
         if(scf.isConfirmed()){
             database = scf.getDatabase();
+            scf.saveToFile();
             databaseAndUserLabel.setText("("+database.getName()+"; "+database.getUser()+")");
             refreshClosestEvent();
             finishedEventsTableView.getItems().clear();
