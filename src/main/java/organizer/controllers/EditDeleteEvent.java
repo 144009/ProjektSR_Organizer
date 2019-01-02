@@ -46,11 +46,12 @@ public class EditDeleteEvent {
         eventName.setText(userEvent.getName());
         eventDesc.setText(userEvent.getDesc());
 
-        eventBeginPickerTime.setLocalTime(LocalTime.of(0,0,0,0));
-        eventEndPickerTime.setLocalTime(LocalTime.of(0,0,0,0));
 
-        eventBeginPicker.setValue(LocalDate.from(((java.sql.Timestamp)userEvent.getEventBegin()).toLocalDateTime()));
-        eventEndPicker.setValue(LocalDate.from(((java.sql.Timestamp)userEvent.getEventEnd()).toLocalDateTime()));
+        eventBeginPickerTime.setLocalTime(((java.sql.Timestamp)userEvent.getEventBegin()).toLocalDateTime().toLocalTime());
+        eventEndPickerTime.setLocalTime(((java.sql.Timestamp)userEvent.getEventEnd()).toLocalDateTime().toLocalTime());
+
+        eventBeginPicker.setValue(((java.sql.Timestamp)userEvent.getEventBegin()).toLocalDateTime().toLocalDate());
+        eventEndPicker.setValue(((java.sql.Timestamp)userEvent.getEventEnd()).toLocalDateTime().toLocalDate());
 
 
     }

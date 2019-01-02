@@ -11,6 +11,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.jfxtras:jfxtras-controls:8.0-r6" level="project" />
+    <orderEntry type="library" name="Maven: org.jfxtras:jfxtras-common:8.0-r6" level="project" />
+    <orderEntry type="library" name="Maven: org.jfxtras:jfxtras-fxml:8.0-r6" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.47" level="project" />
     <orderEntry type="library" name="Maven: org.postgresql:postgresql:42.2.5" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.8" level="project" />
